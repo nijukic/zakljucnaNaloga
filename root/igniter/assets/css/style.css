@@ -1,0 +1,145 @@
+html, body{
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    font-family: 'Raleway', sans-serif;
+}
+body::after{
+    content: "";
+    background-color: black;
+    opacity: 1; 
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    position: absolute;
+    z-index: -1;   
+}
+.sidenav {
+    height: 100%; 
+    width: 0;
+    position: fixed; 
+    z-index: 1;
+    top: 0; 
+    left: 0;
+    background-color: #374045;
+    overflow-x: hidden; 
+    padding-top: 60px;
+    transition: 0.5s; 
+}
+.sidenav a {
+    padding: 8px 8px 8px 32px;
+    text-decoration: none;
+    font-size: 25px;
+    color: gray;
+    display: block;
+    transition: 0.3s;
+
+}
+.sidenav a:hover {
+    color: black;
+}
+.sidenav .closebtn {
+    position: absolute;
+    top: 0;
+    right: 25px;
+    font-size: 36px;
+    margin-left: 50px;
+}
+#main {
+    transition: margin-left .5s;
+    padding: 20px;
+}
+@media screen and (max-height: 450px) {
+    .sidenav {padding-top: 15px;}
+    .sidenav a {font-size: 18px;}
+}
+nav{
+    background-color: #121212;
+    font-weight: bold;
+    font-size: 30px;
+    color: black!important;
+}
+.cellContent{
+    margin: 20px;
+    padding: 20px;
+    color: white;
+    background-color: black;
+}
+.mt-auto, .my-auto {
+    margin-top: auto!important;
+}
+.footer{
+    margin-top: 20px;
+    padding-bottom: 40px;
+    background-color:#121212;
+}
+.footerText{
+    text-align: center;
+    color: white;
+}
+.welcome{
+    color: white;
+}
+.logout{
+    color: white;
+}
+.logout:hover{
+    color: #374045;
+}
+div.error {
+    color: red;
+}
+.vsebinaDijakDejavnosti{
+    text-align: center;
+}
+textarea {
+    resize: horizontal;
+    overflow: auto;
+}
+
+/* This is a single-line comment */
+.nav {
+  display: flex;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);  
+}
+.link {
+  display: flex;
+  width: 75px;
+  height: 75px;
+  margin: 0 5px;
+  justify-content: center;
+  align-items: center;
+}
+.settings-icon {
+  display: block;
+  width: 45px;
+  height: 45px;
+}
+.settings-icon__line {
+  stroke: white;
+  stroke-width: 5px;
+  transition: all 0.2s ease 0.05s;
+}
+.settings-icon__rect {
+  stroke: white;
+  fill: black;
+  stroke-width: 5px;
+  transition: all 0.2s ease 0.05s;
+}
+.link:hover .settings-icon__line,
+.link:hover .settings-icon__rect {
+  transition: all 0.2s ease 0.05s;
+}
+.link:hover .settings-icon__group--1 .settings-icon__rect {
+  transform: translateY(20px);
+}
+.link:hover .settings-icon__group--2 .settings-icon__rect {
+  transform: translateY(-20px);
+}
+.link:hover .settings-icon__group--3 .settings-icon__rect {
+  transform: translateY(25px);
+} 

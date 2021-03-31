@@ -1,0 +1,25 @@
+        <footer class="footer mt-auto py-3">
+            <div class="container-fluid">
+                <p class="footerText">Avtorja: Nik Jukič, Gašper Podbregar</p>
+                <p class="footerText">Mentor: Žiga Podplatnik</p>
+            </div>
+        </footer>
+        
+        <script>
+            
+            init_pointer({
+                pointerColor: "black",
+                ringSize: 15,
+                ringClickSize: 10 
+            })
+            function openNav() {
+              document.getElementById("mySidenav").style.width = "250px";
+            }
+            function closeNav() {
+              document.getElementById("mySidenav").style.width = "0";
+            }
+        </script>
+
+    </body>
+    
+</html>
