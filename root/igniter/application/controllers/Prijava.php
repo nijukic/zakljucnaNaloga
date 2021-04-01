@@ -89,9 +89,8 @@ class Prijava extends CI_Controller{
             $podatki = $this->input->post();
             $podatki_array = array(
                 "email"=>$podatki["txt_email"],
-                "geslo"=>$podatki["txt_geslo"]
+                "geslo"=>hash('sha256', $podatki["txt_geslo"])
             );
-            $podatki_array["geslo"] = hash('sha256', $podatki_array["geslo"]);
             
 
             //zaženemo metodo za pregled uporabnikov
@@ -228,14 +227,13 @@ class Prijava extends CI_Controller{
                 "eNaslov"=> "",
                 "vloga"=>"dijak",
                 "uporabniskoIme"=>"",
-                "geslo"=>$podatki["txt_geslo"],
+                "geslo"=>hash('sha256', $podatki["txt_geslo"]),
                 "Oddelek_idOddelek"=>$podatki["txt_oddelek"]
             );
             $podatki_array["uporabniskoIme"]=$this->prijavni_model->sestaviUporabniskoIme($podatki_array);
             $izid = $this->prijavni_model->pridobiKratice($podatki["txt_sola"]);
             $prava = $izid[0]["kratica"];
             $podatki_array["eNaslov"] = $this->prijavni_model->sestaviEmail($podatki_array, $prava);
-            $podatki_array["geslo"] = hash('sha256', $podatki_array["geslo"]);
 
             echo print_r($podatki);
 
@@ -359,13 +357,12 @@ class Prijava extends CI_Controller{
                 "eNaslov"=> "",
                 "vloga"=>"profesor",
                 "uporabniskoIme"=>"",
-                "geslo"=>$podatki["txt_geslo"],
+                "geslo"=>hash('sha256', $podatki["txt_geslo"]),
             );
             $podatki_array["uporabniskoIme"]=$this->prijavni_model->sestaviUporabniskoIme($podatki_array);
             $izid = $this->prijavni_model->pridobiKratice($podatki["txt_sola"][0]);
             $prava = $izid[0]["kratica"];
             $podatki_array["eNaslov"] = $this->prijavni_model->sestaviEmail($podatki_array, $prava);
-            $podatki_array["geslo"] = hash('sha256', $podatki_array["geslo"]);
 
             if($this->prijavni_model->vstavljanjeUporabnika($podatki_array)){
 
@@ -397,6 +394,69 @@ class Prijava extends CI_Controller{
 
         }
     }
+
+    public function urejanjeUporabnikov(){
+        if($this->session->userdata("vloga") != "admin"){
+            redirect("");
+        }
+        else{
+            $uporabniki["uporabniki"] = $this->prijavni_model->isciUporabnika("");
+            $this->load->view("vpis/admin/urejanjeUporabnikov", $uporabniki);
+            $this->load->view("footer");
+        }
+    }
+
+    public function iskanjeUporabnikov(){
+        if($this->session->userdata("vloga") != "admin"){
+            redirect("");
+        }
+        else{           
+            $iskalniNiz = $this->input->post("txt_iskalniNiz");
+            $uporabniki["uporabniki"] = $this->prijavni_model->isciUporabnika($iskalniNiz);
+            $this->load->view("vpis/admin/urejanjeUporabnikov", $uporabniki);
+            $this->load->view("footer");
+        }
+    }
+
+    public function spremeniGeslo(){
+        if($this->session->userdata("vloga") != "admin"){
+            redirect("");
+        }
+        else{
+        $config_pravila = array(
+            array(
+                "field"=>"txt_geslo",
+                "label"=>"Geslo",
+                "rules"=>"required"
+            )
+        );
+        
+        //podatki gredo čez pravila
+
+        $this->form_validation->set_rules($config_pravila);
+
+        //preverjamo rezultat 
+
+        if($this->form_validation->run()==FALSE){
+
+            $this->session->set_flashdata("error", "Novo geslo ne mora biti prazno!");
+
+            redirect("prijava/urejanjeUporabnikov");
+        }
+        else{
+        $novoGeslo = hash('sha256', $this->input->post("txt_geslo"));
+        echo $novoGeslo;
+        $id = $this->input->post("gumb");
+        $novoGeslo = hash('sha256', $this->input->post("txt_geslo"));
+        $this->db->set("geslo", $novoGeslo);
+        $this->db->where('idOseba', $id);
+        $this->db->update('oseba');
+        $this->session->set_flashdata("succes", "Geslo je bilo spremenjeno");
+        redirect("prijava/urejanjeUporabnikov");
+            }
+        }
+    }
+
 
 
     

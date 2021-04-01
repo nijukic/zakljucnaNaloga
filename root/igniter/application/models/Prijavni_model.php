@@ -112,6 +112,18 @@ class Prijavni_model extends CI_Model{
     public function vstavljanjeSolaHasOseba($podatki_array){
         return $this->db->insert("sola_has_oseba", $podatki_array);
     }
+
+    public function isciUporabnika($niz){
+        $this->db->select("idOseba, ime, priimek, vloga, eNaslov, spol");
+        $this->db->from("oseba");
+        $this->db->like("ime", $niz);
+        $this->db->or_like("priimek", $niz);
+        $this->db->or_like("vloga", $niz);
+        $this->db->order_by("vloga", "DESC");
+        $this->db->order_by("priimek", "ASC");
+        $query = $this->db->get();
+        return $rezultat = $query->result_array();
+    }
     
 
 }

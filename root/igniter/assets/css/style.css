@@ -6,7 +6,7 @@ html, body{
 }
 body::after{
     content: "";
-    background-color: black;
+    background-color: #e7e7de;
     opacity: 1; 
     top: 0;
     left: 0;
@@ -55,7 +55,7 @@ body::after{
     .sidenav a {font-size: 18px;}
 }
 nav{
-    background-color: #121212;
+    background-color: #456268;
     font-weight: bold;
     font-size: 30px;
     color: black!important;
@@ -63,8 +63,8 @@ nav{
 .cellContent{
     margin: 20px;
     padding: 20px;
-    color: white;
-    background-color: black;
+    color: black;
+    background-color: #d0e8f2;
 }
 .mt-auto, .my-auto {
     margin-top: auto!important;
@@ -72,7 +72,7 @@ nav{
 .footer{
     margin-top: 20px;
     padding-bottom: 40px;
-    background-color:#121212;
+    background-color:#456268;
 }
 .footerText{
     text-align: center;
@@ -126,7 +126,7 @@ textarea {
 }
 .settings-icon__rect {
   stroke: white;
-  fill: black;
+  fill: #456268;
   stroke-width: 5px;
   transition: all 0.2s ease 0.05s;
 }
@@ -142,4 +142,4 @@ textarea {
 }
 .link:hover .settings-icon__group--3 .settings-icon__rect {
   transform: translateY(25px);
-} 
+}
