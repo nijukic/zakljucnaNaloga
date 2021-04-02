@@ -40,21 +40,29 @@
 
                 <div class="container-fluid">
                     <div class="row">
-                        <div class="col-lg-4 col-sm-6 vsebina">
-                            <div class="cellContent border">
-                                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris dignissim condimentum molestie. Etiam nec vehicula enim, ac vulputate nibh. Phasellus interdum urna sed ullamcorper vehicula. Aenean sed tristique ante, luctus cursus nulla. Suspendisse non ante id libero molestie mattis at vitae sem. Mauris nec libero facilisis, dictum velit non, interdum ipsum. Suspendisse neque ligula, volutpat non nulla hendrerit, vulputate gravida leo. Fusce congue quam nisl, non pulvinar felis suscipit nec. Vestibulum ullamcorper nec libero vel tempor. Etiam facilisis ultrices dolor, mattis rutrum lectus posuere vel.</p>
-                            </div>
-                        </div>
-                        <div class="col-lg-4 col-sm-6 vsebina">
-                            <div class="cellContent border">
-                                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris dignissim condimentum molestie. Etiam nec vehicula enim, ac vulputate nibh. Phasellus interdum urna sed ullamcorper vehicula. Aenean sed tristique ante, luctus cursus nulla. Suspendisse non ante id libero molestie mattis at vitae sem. Mauris nec libero facilisis, dictum velit non, interdum ipsum. Suspendisse neque ligula, volutpat non nulla hendrerit, vulputate gravida leo. Fusce congue quam nisl, non pulvinar felis suscipit nec. Vestibulum ullamcorper nec libero vel tempor. Etiam facilisis ultrices dolor, mattis rutrum lectus posuere vel.</p>
-                            </div>
-                        </div>
-                        <div class="col-lg-4 col-sm-12 vsebina">
-                            <div class="cellContent border">
-                                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris dignissim condimentum molestie. Etiam nec vehicula enim, ac vulputate nibh. Phasellus interdum urna sed ullamcorper vehicula. Aenean sed tristique ante, luctus cursus nulla. Suspendisse non ante id libero molestie mattis at vitae sem. Mauris nec libero facilisis, dictum velit non, interdum ipsum. Suspendisse neque ligula, volutpat non nulla hendrerit, vulputate gravida leo. Fusce congue quam nisl, non pulvinar felis suscipit nec. Vestibulum ullamcorper nec libero vel tempor. Etiam facilisis ultrices dolor, mattis rutrum lectus posuere vel.</p>
-                            </div>
-                        </div>
+                        <?php
+                        foreach($obvestila as $obvestilo){
+                            echo "<div class='col-12 col-md-6 vsebina'>";
+                                echo "<div class='cellContent border'>";
+                                    if($obvestilo["odobreno"] == 1){
+                                        echo "<div class='prijavaOdobrena' style='background-color:90be6d;'>";
+                                            echo "Prijava na dejavnost: " . $obvestilo["naziv"] . " - odobrena";
+                                        echo "</div>";
+                                    }
+                                    elseif($obvestilo["odobreno"] == 2){
+                                        echo "<div class='prijavaZavrnjena' style='background-color:e5383b;'>";
+                                            echo "Prijava na dejavnost:  " . $obvestilo["naziv"] . " - zavrnjena";
+                                        echo "</div>";
+                                    }
+                                    elseif($obvestilo["odobreno"] == 0){
+                                        echo "<div class='prijavaPoslana' style='background-color:fee440;'>";
+                                            echo "Prijava na dejavnost:  " . $obvestilo["naziv"] . " - čaka na odobritev";
+                                        echo "</div>";
+                                    }
+                                echo "</div>";
+                            echo "</div>";
+                        }
+                        ?>
                     </div>
 
                 </div>

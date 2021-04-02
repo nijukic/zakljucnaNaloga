@@ -685,13 +685,20 @@ class Dejavnost extends CI_Controller{
 
         $id = explode(";", $id);
 
-        $this->db->where("Dejavnost_idDejavnost", $id[0]);
-        $this->db->where("Oseba_idOseba", $id[1]);
-        $this->db->delete("oseba_has_dejavnost");
-
-        $this->session->set_flashdata("succes", "Prijava je bila zavrnjena!");
+        if($this->session->userdata("vloga") == "profesor"){
+            $this->db->set("odobreno", 2, FALSE);
+            $this->db->where("Dejavnost_idDejavnost", $id[0]);
+            $this->db->where("Oseba_idOseba", $id[1]);
+            $this->db->update("oseba_has_dejavnost");
+    
+            $this->session->set_flashdata("succes", "Prijava je bila zavrnjena!");
+        }
         
         if($this->session->userdata("vloga") == "admin"){
+            $this->db->where("Dejavnost_idDejavnost", $id[0]);
+            $this->db->where("Oseba_idOseba", $id[1]);
+            $this->db->delete("oseba_has_dejavnost");
+
             $this->db->set("moznaMesta", "moznaMesta+1", FALSE);
             $this->db->where("idDejavnost", $id[0]);
             $this->db->update("dejavnost");
@@ -923,7 +930,7 @@ class Dejavnost extends CI_Controller{
         $dejavnost["dijaki"][0]["mozniOddelki"] = explode(";",  $dejavnost["dijaki"][0]["mozniOddelki"]);
         $key = array_search("", $dejavnost["dijaki"][0]["mozniOddelki"]);
         unset($dejavnost["dijaki"][0]["mozniOddelki"][$key]);
-        $dejavnost["sezDijakov"] = $this->dejavnost_model->mozniDijaki($dejavnost["dijaki"][0]["mozniOddelki"], $dejavnost["dijaki"][0]["idDejavnost"]);
+        $dejavnost["sezDijakov"] = $this->dejavnost_model->mozniDijaki($dejavnost["dijaki"][0]["mozniOddelki"], $id);
 
         if($this->session->userdata("vloga") == "admin"){
             $this->load->view("dejavnost/rocnaPrijavaDijakiAdmin", $dejavnost);
@@ -955,16 +962,13 @@ class Dejavnost extends CI_Controller{
             );
 
 
-            print_r($prosnja[0]);
-
-            if($this->dejavnost_model->preveriRazpoložljivost($prosnja[$st]["Dejavnost_idDejavnost"]) and $this->dejavnost_model->preveriObstojProsnje($prosnja[$st]) == false){
-
-            }
-            else{
-    
-                $uspeh = 0;
-            }
+            $this->dejavnost_model->izbrisiProsnjoCeObstaja($prosnja[$st]);
             $st++;
+        }
+
+        $stMest = $this->dejavnost_model->avtomatskaPrijavaPridobiMoznaMesta($id);
+        if($stMest < $st){
+            $uspeh = 0;
         }
 
         if($uspeh == 1){
@@ -983,7 +987,7 @@ class Dejavnost extends CI_Controller{
         }
         else{
 
-            $this->session->set_flashdata("error", "Dijake ni bilo mogoče prijaviti!");
+            $this->session->set_flashdata("error", "Dejavnost ima premalo mest!");
     
             redirect("dejavnost/dodajanjeDijakov");
         }

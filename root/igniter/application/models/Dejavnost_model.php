@@ -282,21 +282,27 @@ public function rocnaPrijava(){
 
 public function mozniDijaki($sezOddelkov, $id){
 
-#Create where clause
+$this->db->distinct();
 $this->db->select('Oseba_idOseba');
 $this->db->from('oseba_has_dejavnost');
-$this->db->where('Dejavnost_idDejavnost', $id);
-
+$this->db->where("Dejavnost_idDejavnost", $id);
+$this->db->where("avtor", 0);
+$this->db->where("odobreno", 1);
 
 $where_clause = $this->db->get_compiled_select();
 
-#Create main query
+$this->db->select('idOseba');
+$this->db->from('oseba');
+$this->db->where_in("Oddelek_idOddelek", $sezOddelkov);
+
+$where_clause2 = $this->db->get_compiled_select();
+
+
+$this->db->distinct();
 $this->db->select('idOseba, ime, priimek');
 $this->db->from('oseba');
-$this->db->join("oseba_has_dejavnost", "oseba.idOseba=oseba_has_dejavnost.Oseba_idOseba", "left");
-$this->db->where("`Oseba_idOseba` NOT IN ($where_clause)", NULL, FALSE);
-$this->db->where_in("Oddelek_idOddelek", $sezOddelkov);
-$this->db->group_by('idOseba');
+$this->db->where("`idOseba` NOT IN ($where_clause)", NULL, FALSE);
+$this->db->where("`idOseba` IN ($where_clause2)", NULL, FALSE);
 
 $query = $this->db->get();
 return $rezultat = $query->result_array();
@@ -304,7 +310,7 @@ return $rezultat = $query->result_array();
 
 public function prosnjaZaPrijavoPotrjeno($prosnja, $id){
     $this->db->set("moznaMesta", "moznaMesta-1", FALSE);
-    $this->db->where("idDejavnost", $id[0]);
+    $this->db->where("idDejavnost", $id);
     $this->db->update("dejavnost");
 
     return $this->db->insert("oseba_has_dejavnost", $prosnja);
@@ -388,7 +394,21 @@ public function pridobiProsnjeDejavnostProfesor($idProfesor){
     return $rezultat = $query->result_array();
 }
 
+public function izbrisiProsnjoCeObstaja($prosnja){
+    $this->db->where("Dejavnost_idDejavnost", $prosnja["Dejavnost_idDejavnost"]);
+    $this->db->where("Oseba_idOseba", $prosnja["Oseba_idOseba"]);
+    $this->db->delete("oseba_has_dejavnost");
+}
 
+public function domovDijak($idOseba){
+    $this->db->select("odobreno, naziv");
+    $this->db->from("oseba");
+    $this->db->join("oseba_has_dejavnost", "idOseba=Oseba_idOseba");
+    $this->db->join("dejavnost", "Dejavnost_idDejavnost=idDejavnost");
+    $this->db->where("idOseba", $idOseba);
+    $query = $this->db->get();
+    return $rezultat = $query->result_array(); 
+}
 
 
 

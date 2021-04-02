@@ -77,7 +77,7 @@
                             echo form_open("prijava/spremeniGeslo");?>
                             <br>
                             <div class="form-group">
-                                <input type="text" class="form-control" id="txt_geslo" placeholder="Vnesite novo geslo" name="txt_geslo">
+                                <input type="password" class="form-control" id="txt_geslo" placeholder="Vnesite novo geslo" name="txt_geslo">
                                 <?php echo form_error("txt_geslo", "<div class='alert alert-danger error'>", "</div>"); ?>
                             </div>
                             <?php

@@ -120,10 +120,6 @@
 
                                     echo "<br><br>";
 
-                                    echo form_open("dejavnost/avtomatskaPrijava");
-                                    echo "<button type='submit'  name='gumb' id='gumb' class='btn btn-dark' value=" . $opcija["idDejavnost"]  . ">Avtomatsko prijavi dijake</button>";
-                                    echo form_close(); 
-
                                     }
                             ?>
                                 <br>
