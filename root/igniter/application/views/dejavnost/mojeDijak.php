@@ -74,8 +74,8 @@
                                         }
 
 
-                                        echo "<p>" . "Datum začetka: " . $opcija["datum"] . "</p>";
-                                        echo "<p>" . "Datum konca: " . "</p>"; //manjka datum konca
+                                        echo "<p>" . "Datum začetka: " . $opcija["datumZacetek"] . "</p>";
+                                        echo "<p>" . "Datum konca: " . $opcija["datumKonec"] . "</p>";
 
                                             foreach($opcija["povezava"] as $opcija2){
                                                 $z=0;

@@ -55,6 +55,8 @@
 
                                     echo "<h1>" . $opcija["naziv"] . "</h1>" . "<br>";
 
+                                    echo "<p>Mentor: " . $opcija["ime"] . " " . $opcija["priimek"] . "</p>" . "<br>";
+
                                     echo "<p>" . $opcija["opis"] . "</p>";
 
                                     echo "<p>" . "Mozna Mesta: " . $opcija["moznaMesta"] . "</p>";
@@ -67,8 +69,8 @@
                                     }
 
 
-                                    echo "<p>" . "Datum začetka: " . $opcija["datum"] . "</p>";
-                                    echo "<p>" . "Datum konca: " . "</p>"; //manjka datum konca
+                                    echo "<p>" . "Datum začetka: " . $opcija["datumZacetek"] . "</p>";
+                                    echo "<p>" . "Datum konca: " . $opcija["datumKonec"] . "</p>";
 
                                         foreach($opcija["povezava"] as $opcija2){
                                             $z=0;
@@ -123,6 +125,12 @@
 
                                     echo form_open("dejavnost/spreminjanjeDejavnosti");
                                     echo "<button type='submit'  name='gumb' id='gumb' class='btn btn-dark' value=" . $opcija["idDejavnost"]  . ">Spremeni dejavnost</button>";
+                                    echo form_close(); 
+
+                                    echo "<br>";
+
+                                    echo form_open("dejavnost/prikaziPrijavljene");
+                                    echo "<button type='submit'  name='gumb' id='gumb' class='btn btn-dark' value=" . $opcija["idDejavnost"]  . ">Udeleženci</button>";
                                     echo form_close(); 
 
                                     }

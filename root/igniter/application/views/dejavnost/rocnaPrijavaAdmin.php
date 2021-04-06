@@ -46,7 +46,10 @@
                     
                     <div class="row">
                     
-                        <?php       
+                        <?php
+                            if($izbire == null){
+                                echo "<h1>V bazi ni dejavnosti!</h1>";
+                            }                                   
                             foreach($izbire as $opcija){
                                     echo "<div class='col-12 col-md-5 col-lg-4'>";
                                     echo "<div class='cellContent border'>";
@@ -65,7 +68,8 @@
                                     }
 
 
-                                    echo "<p>" . "Datum začetka: " . $opcija["datum"] . "</p>";
+                                    echo "<p>" . "Datum začetka: " . $opcija["datumZacetek"] . "</p>";
+                                    echo "<p>" . "Datum konca: " . $opcija["datumKonec"] . "</p>";
 
                                         foreach($opcija["povezava"] as $opcija2){
                                             $z=0;

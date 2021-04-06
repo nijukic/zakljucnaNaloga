@@ -67,7 +67,8 @@
                                             echo "<p>" . "Malica: " . "Malice ni" . "</p>";
                                         }
 
-                                        echo "<p>" . "Datum začetka: " . $opcija["datum"] . "</p>";
+                                        echo "<p>" . "Datum začetka: " . $opcija["datumZacetek"] . "</p>";
+                                        echo "<p>" . "Datum konca: " . $opcija["datumKonec"] . "</p>";
 
                                         }
 

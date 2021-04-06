@@ -48,7 +48,7 @@
                       <input type="password" class="form-control" id="txt_geslo" placeholder="Vnesite geslo" name="txt_geslo">
                       <?php echo form_error("txt_geslo", "<div class='error'>", "</div>"); ?>
                     </div>
-                    <button type="submit" class="btn btn-primary">Prijava</button>
+                    <button type="submit" class="btn btn-dark">Prijava</button>
                   <?php echo form_close() ?> 
                     
                 </div>

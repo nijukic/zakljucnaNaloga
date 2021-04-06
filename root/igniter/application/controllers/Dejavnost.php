@@ -58,7 +58,7 @@ class Dejavnost extends CI_Controller{
             array(
                 "field"=>"txt_mesta",
                 "label"=>"Možna mesta",
-                "rules"=>"required"
+                "rules"=>"required|integer"
             ),
             array(
                 "field"=>"txt_opis",
@@ -71,8 +71,13 @@ class Dejavnost extends CI_Controller{
                 "rules"=>"required"
             ),
             array(
-                "field"=>"txt_datum",
-                "label"=>"Datum",
+                "field"=>"txt_datumZacetek",
+                "label"=>"Datum začetka",
+                "rules"=>"required"
+            ),
+            array(
+                "field"=>"txt_datumKonec",
+                "label"=>"Datum konca",
                 "rules"=>"required"
             ),
             array(
@@ -105,7 +110,7 @@ class Dejavnost extends CI_Controller{
 
             $this->ustvari();
         }
-        else{
+        elseif($podatki["txt_datumZacetek"]<= $podatki["txt_datumKonec"]){
 
             
             $podatki = $this->input->post();
@@ -141,7 +146,8 @@ class Dejavnost extends CI_Controller{
                 "naziv"=>$podatki["txt_naziv"],
                 "moznaMesta"=>$podatki["txt_mesta"],
                 "opis"=>$podatki["txt_opis"],
-                "datum"=>$podatki["txt_datum"],
+                "datumZacetek"=>$podatki["txt_datumZacetek"],
+                "datumKonec"=>$podatki["txt_datumKonec"],
                 "malica"=>$podatki["txt_malica"],
                 "mozneSole"=>$niz,
                 "mozniProgrami"=>$niz2,
@@ -185,69 +191,76 @@ class Dejavnost extends CI_Controller{
 
            }
         }
+        else{
+            $this->session->set_flashdata("error", "Konec dejavnosti ne more biti pred začetkom!");
+
+            redirect("dejavnost/ustvari");
+        }
     }
     
     public function mojeDejavnosti(){
         if($this->session->userdata("vloga") != "profesor"){
             redirect("");
         }
+        else{
+            $rezultat["izbire"] = $this->dejavnost_model->mojeDejavnosti($this->session->userdata("idOseba"));
+            $rezultat["vloga"] = "profesor";
+            $st=0;
+            foreach($rezultat["izbire"] as $opcija){
+                $rezultat["izbire"][$st]["mozneSole"] = explode(";", $opcija["mozneSole"]);
+                $rezultat["izbire"][$st]["mozniProgrami"] = explode(";", $opcija["mozniProgrami"]);
+                $rezultat["izbire"][$st]["mozniLetniki"] = explode(";", $opcija["mozniLetniki"]);
+                $rezultat["izbire"][$st]["mozniOddelki"] = explode(";", $opcija["mozniOddelki"]);
+    
+                $key = array_search("", $rezultat["izbire"][$st]["mozneSole"]);
+                unset($rezultat["izbire"][$st]["mozneSole"][$key]);
         
-        $rezultat["izbire"] = $this->dejavnost_model->mojeDejavnosti($this->session->userdata("idOseba"));
-        $rezultat["vloga"] = "profesor";
-        $st=0;
-        foreach($rezultat["izbire"] as $opcija){
-            $rezultat["izbire"][$st]["mozneSole"] = explode(";", $opcija["mozneSole"]);
-            $rezultat["izbire"][$st]["mozniProgrami"] = explode(";", $opcija["mozniProgrami"]);
-            $rezultat["izbire"][$st]["mozniLetniki"] = explode(";", $opcija["mozniLetniki"]);
-            $rezultat["izbire"][$st]["mozniOddelki"] = explode(";", $opcija["mozniOddelki"]);
-
-            $key = array_search("", $rezultat["izbire"][$st]["mozneSole"]);
-            unset($rezultat["izbire"][$st]["mozneSole"][$key]);
+                $key = array_search("", $rezultat["izbire"][$st]["mozniProgrami"]);
+                unset($rezultat["izbire"][$st]["mozniProgrami"][$key]);
+        
+                $key = array_search("", $rezultat["izbire"][$st]["mozniLetniki"]);
+                unset($rezultat["izbire"][$st]["mozniLetniki"][$key]);
+        
+                $key = array_search("", $rezultat["izbire"][$st]["mozniOddelki"]);
+                unset($rezultat["izbire"][$st]["mozniOddelki"][$key]);
+                $st++;
+            }
     
-            $key = array_search("", $rezultat["izbire"][$st]["mozniProgrami"]);
-            unset($rezultat["izbire"][$st]["mozniProgrami"][$key]);
+            //print_r($rezultat["izbire"]);
+            if($rezultat["izbire"] != NULL){
+                for($x=min(array_keys($rezultat["izbire"])); $x<max(array_keys($rezultat["izbire"]))+1; $x++){
     
-            $key = array_search("", $rezultat["izbire"][$st]["mozniLetniki"]);
-            unset($rezultat["izbire"][$st]["mozniLetniki"][$key]);
     
-            $key = array_search("", $rezultat["izbire"][$st]["mozniOddelki"]);
-            unset($rezultat["izbire"][$st]["mozniOddelki"][$key]);
-            $st++;
-        }
-
-        //print_r($rezultat["izbire"]);
-        if($rezultat["izbire"] != NULL){
-            for($x=min(array_keys($rezultat["izbire"])); $x<max(array_keys($rezultat["izbire"]))+1; $x++){
-
-
-                $y=0;
-                foreach($rezultat["izbire"] as $opcija){
-
-                $rezultat["izbire"][$x]["povezava"][$y] = $this->dejavnost_model->poveziVse($rezultat["izbire"][$x]["mozneSole"][$y], 
-                $rezultat["izbire"][$x]["mozniProgrami"],
-                $rezultat["izbire"][$x]["mozniLetniki"],
-                $rezultat["izbire"][$x]["mozniOddelki"]);
+                    $y=0;
+                    foreach($rezultat["izbire"] as $opcija){
+    
+                    $rezultat["izbire"][$x]["povezava"][$y] = $this->dejavnost_model->poveziVse($rezultat["izbire"][$x]["mozneSole"][$y], 
+                    $rezultat["izbire"][$x]["mozniProgrami"],
+                    $rezultat["izbire"][$x]["mozniLetniki"],
+                    $rezultat["izbire"][$x]["mozniOddelki"]);
+                    }
+                
                 }
             
-            }
-        
-        $this->load->view("dejavnost/moje", $rezultat);
-        }
-        else{
             $this->load->view("dejavnost/moje", $rezultat);
-        }  
-        //print_r($rezultat["izbire"]);
+            }
+            else{
+                $this->load->view("dejavnost/moje", $rezultat);
+            }  
+            //print_r($rezultat["izbire"]);
+    
+    
+    
+            //$st=0;
+            //foreach($rezultat["izbire"] as $opcija){
+            //    $rezultat["izbire"][$st]["imenaSol"] = $this->dejavnost_model->imenaSol($opcija["mozneSole"]);
+            //    $rezultat["izbire"][$st]["imenaProgramov"] = $this->dejavnost_model->imenaProgramov($opcija["mozniProgrami"]);
+            //    $rezultat["izbire"][$st]["imenaLetnikov"] = $this->dejavnost_model->imenaLetnikov($opcija["mozniLetniki"]);
+            //    $rezultat["izbire"][$st]["imenaOddelkov"] = $this->dejavnost_model->imenaOddelkov($opcija["mozniOddelki"]);
+            //    $st++;
+            //}
+        }
 
-
-
-        //$st=0;
-        //foreach($rezultat["izbire"] as $opcija){
-        //    $rezultat["izbire"][$st]["imenaSol"] = $this->dejavnost_model->imenaSol($opcija["mozneSole"]);
-        //    $rezultat["izbire"][$st]["imenaProgramov"] = $this->dejavnost_model->imenaProgramov($opcija["mozniProgrami"]);
-        //    $rezultat["izbire"][$st]["imenaLetnikov"] = $this->dejavnost_model->imenaLetnikov($opcija["mozniLetniki"]);
-        //    $rezultat["izbire"][$st]["imenaOddelkov"] = $this->dejavnost_model->imenaOddelkov($opcija["mozniOddelki"]);
-        //    $st++;
-        //}
         
 
         
@@ -462,15 +475,37 @@ class Dejavnost extends CI_Controller{
         $id=$this->input->post("gumb");
 
         if($this->dejavnost_model->brisiDejavnost($id)){
+            if($this->session->userdata("vloga") == "admin"){
+
+                $this->session->set_flashdata("succes", "Dejavnost je bila uspešno izbrisana");
+    
+                redirect("dejavnost/vseDejavnosti");
+            }
+
+            elseif($this->session->userdata("vloga") == "profesor"){
 
             $this->session->set_flashdata("succes", "Dejavnost je bila uspešno izbrisana");
     
             redirect("dejavnost/mojeDejavnosti");
+            }
         }
         else{
-            $this->session->set_flashdata("error", "Dejavnost ni bilo mogoče izbrisati");
+            if($this->session->userdata("vloga") == "admin"){
+
+                $this->session->set_flashdata("error", "Dejavnost ni bilo mogoče izbrisati");
     
-            redirect("dejavnost/mojeDejavnosti");
+                redirect("dejavnost/vseDejavnosti");
+            }
+
+            elseif($this->session->userdata("vloga") == "profesor"){
+
+                $this->session->set_flashdata("error", "Dejavnost ni bilo mogoče izbrisati");
+    
+                redirect("dejavnost/mojeDejavnosti");
+            }
+            
+    
+            
         }
     }
 
@@ -564,83 +599,104 @@ class Dejavnost extends CI_Controller{
         if($this->session->userdata("vloga") != "admin" and $this->session->userdata("vloga") != "profesor"){
             redirect("");
         }
-
-        $config_pravila = array(
-            array(
-                "field"=>"txt_naziv",
-                "label"=>"Naziv dejavnosti",
-                "rules"=>"required"
-            ),
-            array(
-                "field"=>"txt_mesta",
-                "label"=>"Možna mesta",
-                "rules"=>"required"
-            ),
-            array(
-                "field"=>"txt_opis",
-                "label"=>"Opis dejavnosti",
-                "rules"=>"required"
-            ),
-            array(
-                "field"=>"txt_malica",
-                "label"=>"Malica",
-                "rules"=>"required"
-            ),
-            array(
-                "field"=>"txt_datum",
-                "label"=>"Datum",
-                "rules"=>"required"
-            )
-            
-        );
-
-
-        $this->form_validation->set_rules($config_pravila);
-
-        if($this->form_validation->run()==FALSE){
-
-            $this->spreminjanjeDejavnosti();
-        }
         else{
-            $podatki = $this->input->post();
-
-            $podatki_array = array(
-                "naziv"=>$podatki["txt_naziv"],
-                "moznaMesta"=>$podatki["txt_mesta"],
-                "opis"=>$podatki["txt_opis"],
-                "datum"=>$podatki["txt_datum"],
-                "malica"=>$podatki["txt_malica"],
-                "idDejavnost"=>$podatki["idDejavnost"]
-            );
-
-            if($dejavnost["select"] = $this->dejavnost_model->posodobitevDejavnosti($podatki_array)){
-
-                if($this->session->userdata("vloga") == "admin"){
-                    $this->session->set_flashdata("succes", "Dejavnost je bila uspešno spremenjena");
-    
-                    redirect("dejavnost/vseDejavnosti");
-                }
-                else if($this->session->userdata("vloga") == "profesor"){
-                    $this->session->set_flashdata("succes", "Dejavnost je bila uspešno spremenjena");
-    
-                    redirect("dejavnost/mojeDejavnosti");
-                }
+            $config_pravila = array(
+                array(
+                    "field"=>"txt_naziv",
+                    "label"=>"Naziv dejavnosti",
+                    "rules"=>"required"
+                ),
+                array(
+                    "field"=>"txt_mesta",
+                    "label"=>"Možna mesta",
+                    "rules"=>"required|integer"
+                ),
+                array(
+                    "field"=>"txt_opis",
+                    "label"=>"Opis dejavnosti",
+                    "rules"=>"required"
+                ),
+                array(
+                    "field"=>"txt_malica",
+                    "label"=>"Malica",
+                    "rules"=>"required"
+                ),
+                array(
+                    "field"=>"txt_datumZacetek",
+                    "label"=>"Datum začetka",
+                    "rules"=>"required"
+                ),
+                array(
+                    "field"=>"txt_datumKonec",
+                    "label"=>"Datum Konca",
+                    "rules"=>"required"
+                )
                 
-
+            );
+    
+    
+            $this->form_validation->set_rules($config_pravila);
+    
+            if($this->form_validation->run()==FALSE){
+    
+                $this->spreminjanjeDejavnosti();
+            }
+            elseif($podatki["txt_datumZacetek"]<=$podatki["txt_datumKonec"]){
+                $podatki = $this->input->post();
+    
+                $podatki_array = array(
+                    "naziv"=>$podatki["txt_naziv"],
+                    "moznaMesta"=>$podatki["txt_mesta"],
+                    "opis"=>$podatki["txt_opis"],
+                    "datumZacetek"=>$podatki["txt_datumZacetek"],
+                    "datumKonec"=>$podatki["txt_datumKonec"],
+                    "malica"=>$podatki["txt_malica"],
+                    "idDejavnost"=>$podatki["idDejavnost"]
+                );
+    
+                if($dejavnost["select"] = $this->dejavnost_model->posodobitevDejavnosti($podatki_array)){
+    
+                    if($this->session->userdata("vloga") == "admin"){
+                        $this->session->set_flashdata("succes", "Dejavnost je bila uspešno spremenjena");
+        
+                        redirect("dejavnost/vseDejavnosti");
+                    }
+                    else if($this->session->userdata("vloga") == "profesor"){
+                        $this->session->set_flashdata("succes", "Dejavnost je bila uspešno spremenjena");
+        
+                        redirect("dejavnost/mojeDejavnosti");
+                    }
+                    
+    
+                }
+                else{
+                    if($this->session->userdata("vloga") == "admin"){
+                        $this->session->set_flashdata("error", "Dejavnosti ni bilo mogoče spremeniti");
+        
+                        redirect("dejavnost/vseDejavnosti");
+                    }
+                    else if($this->session->userdata("vloga") == "profesor"){
+                        $this->session->set_flashdata("error", "Dejavnosti ni bilo mogoče spremeniti");
+        
+                        redirect("dejavnost/mojeDejavnosti");
+                    }
+                }
             }
             else{
                 if($this->session->userdata("vloga") == "admin"){
-                    $this->session->set_flashdata("error", "Dejavnosti ni bilo mogoče spremeniti");
+                    $this->session->set_flashdata("error", "Konec dejavnosti ne more biti pred začetkom!");
     
-                    redirect("dejavnost/vseDejavnosti");
+                    redirect("dejavnost/spreminjanjeDejavnosti");
                 }
                 else if($this->session->userdata("vloga") == "profesor"){
-                    $this->session->set_flashdata("error", "Dejavnosti ni bilo mogoče spremeniti");
+                    $this->session->set_flashdata("error", "Konec dejavnosti ne more biti pred začetkom!");
     
-                    redirect("dejavnost/mojeDejavnosti");
+                    redirect("dejavnost/spreminjanjeDejavnosti");
                 }
             }
         }
+
+
 
     }
 
@@ -664,6 +720,8 @@ class Dejavnost extends CI_Controller{
             $this->db->set("moznaMesta", "moznaMesta-1", FALSE);
             $this->db->where("idDejavnost", $id[0]);
             $this->db->update("dejavnost");
+
+            #$this->dejavnost_model->ustvariPrisotnost($id[0],  $id[1]);
     
             $this->session->set_flashdata("succes", "Prošnja je bila odobrena!");
         
@@ -797,6 +855,7 @@ class Dejavnost extends CI_Controller{
             }
             
         }
+        #print_r($rezultat);
         $this->load->view("dejavnost/vseDejavnosti", $rezultat);
     }
     else{
@@ -1008,7 +1067,7 @@ class Dejavnost extends CI_Controller{
             $oddelki = explode(";", $oddelki[0]["mozniOddelki"]);
             unset($oddelki[count($oddelki)-1]);
             $dijakiKiUstrezajoPrijavi = $this->dejavnost_model->avtomatskaPrijavaPridobiDijake($oddelki, $moznaMesta);
-            print_r($dijakiKiUstrezajoPrijavi);
+            #print_r($dijakiKiUstrezajoPrijavi);
             foreach($dijakiKiUstrezajoPrijavi as $dijak){
                 $relacija = array(
                     "Oseba_idOseba" => $dijak["idOseba"],
@@ -1028,7 +1087,7 @@ class Dejavnost extends CI_Controller{
         if($this->session->userdata("vloga") != "profesor"){
             redirect("");
         }
-        
+        else{
         $prosnjeUcencev["prosnje"] = $this->dejavnost_model->pridobiProsnjeDejavnostProfesor($this->session->userdata("idOseba"));
         if($prosnjeUcencev["prosnje"] != NULL){
             for($x=0; $x<sizeof($prosnjeUcencev["prosnje"]); $x++){
@@ -1059,7 +1118,8 @@ class Dejavnost extends CI_Controller{
         else{
             $koncna["prosnje"] = array();
             $this->load->view("dejavnost/prijaveProfesor", $koncna);
-        }    
+        }
+    }  
 
 
         
@@ -1069,6 +1129,7 @@ class Dejavnost extends CI_Controller{
         if($this->session->userdata("vloga") != "profesor"){
             redirect("");
         }
+        else{
         $id = $this->input->post("gumb");
 
         $id = explode(";", $id);
@@ -1084,6 +1145,115 @@ class Dejavnost extends CI_Controller{
         $this->session->set_flashdata("succes", "Prijava je bila izbrisana");
 
         redirect("dejavnost/izbrisPrijaveProfesor");
+    }
+    }
+
+    public function prosnjeDijakovAdmin(){
+        if($this->session->userdata("vloga") != "admin"){
+            redirect("");
+        }
+        else{
+            $prosnjeUcencev["prosnje"] = $this->dejavnost_model->pridobiProsnjeDejavnost($this->session->userdata("idOseba"));
+
+            if($prosnjeUcencev["prosnje"] != NULL){
+                for($x=0; $x<sizeof($prosnjeUcencev["prosnje"]); $x++){
+                    $sez[$x] = $prosnjeUcencev["prosnje"][$x]["Dejavnost_idDejavnost"]; 
+                }
+                $prosnjeUcencev["prosnje"] = $this->dejavnost_model->pridobiProsnjeUcenec($sez);
+                if($prosnjeUcencev["prosnje"] != NULL){
+                for($x=0; $x<sizeof($prosnjeUcencev["prosnje"]); $x++){
+
+                    if($prosnjeUcencev["prosnje"][$x]["odobreno"] != 0){
+
+                        unset($prosnjeUcencev["prosnje"][$x]);
+                    }
+                }
+                    if($prosnjeUcencev["prosnje"] != NULL){
+                    for($x=0; $x<sizeof($prosnjeUcencev["prosnje"]); $x++){
+                        $koncna["prosnje"][$x] = $this->dejavnost_model->dijaKiJePoslalProsnjo($prosnjeUcencev["prosnje"][$x]["Oseba_idOseba"],$prosnjeUcencev["prosnje"][$x]["Dejavnost_idDejavnost"]);
+                    }
+
+                        if($koncna["prosnje"] != NULL){
+                            $this->load->view("dejavnost/prosnjeAdmin", $koncna);
+                        }
+
+                        else{
+                            $this->load->view("dejavnost/prosnjeAdmin", $koncna);
+                        }
+                    }
+                    else{
+                    $koncna["prosnje"] = array();
+                    $this->load->view("dejavnost/prosnjeAdmin", $koncna);
+                    }
+                }
+                else{
+                $koncna["prosnje"] = array();
+                $this->load->view("dejavnost/prosnjeAdmin", $koncna);
+                    }
+            }
+            else{
+                $koncna["prosnje"] = array();
+                $this->load->view("dejavnost/prosnjeAdmin", $koncna);
+            }
+
+        }
+    }
+
+    public function potrditevPrijaveAdmin(){
+        if($this->session->userdata("vloga") != "admin"){
+            redirect("");
+        }
+
+        $id = $this->input->post("gumb");
+
+        $id = explode(";", $id);
+
+        if($this->dejavnost_model->preveriRazpoložljivost($id[0])){
+            $this->db->set("odobreno", 1);
+            $this->db->where("Dejavnost_idDejavnost", $id[0]);
+            $this->db->where("Oseba_idOseba", $id[1]);
+            $this->db->update("oseba_has_dejavnost");
+    
+            $this->db->set("moznaMesta", "moznaMesta-1", FALSE);
+            $this->db->where("idDejavnost", $id[0]);
+            $this->db->update("dejavnost");
+    
+            $this->session->set_flashdata("succes", "Prošnja je bila odobrena!");
+        
+            redirect("dejavnost/prosnjeDijakovAdmin");
+        }
+        else{
+            $this->session->set_flashdata("error", "Prošnje ni bilo mogoče odobriti!");
+        
+            redirect("dejavnost/prosnjeDijakovAdmin");
+        }
+    }
+
+    public function zavrnitevPrijaveAdmin(){
+        if($this->session->userdata("vloga") != "admin"){
+            redirect("");
+        }
+        else{
+            $id = $this->input->post("gumb");
+
+            $id = explode(";", $id);
+    
+            $this->db->set("odobreno", 2, FALSE);
+            $this->db->where("Dejavnost_idDejavnost", $id[0]);
+            $this->db->where("Oseba_idOseba", $id[1]);
+            $this->db->update("oseba_has_dejavnost");
+        
+            $this->session->set_flashdata("succes", "Prijava je bila zavrnjena!");
+    
+            redirect("dejavnost/prosnjeDijakovAdmin");
+        }
+
+    }
+
+    public function prikaziPrijavljene(){
+        $id = $this->input->post("gumb");
+        $udelezenci["udelezenci"] = $this->dejavnost_model->pridobiUdelezence($id);
+        $this->load->view("dejavnost/udelezenci", $udelezenci);
     }
     
 

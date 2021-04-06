@@ -4,7 +4,7 @@
 
     <body class="d-flex flex-column min-vh-100">
         
-        <main role="main" class="flex-shrink-0">
+
             <?php
                 if($this->session->flashdata("succes")){
                     ?>
@@ -21,6 +21,8 @@
                 <?php        
                     }
             ?>
+
+            <main role="main" class="flex-shrink-0">
             
                 <div class="wrapper">
 
@@ -48,7 +50,7 @@
                     
                         <div>
                         
-                            <?php echo form_open("dejavnost/spreminjanjeDejavnosti-submit");?>
+                            <?php echo form_open("dejavnost/spreminjanjeDejavnosti_submit");?>
 
 
                                 <div class="form-group">
@@ -90,11 +92,23 @@
 
                                 <br>
 
+                                <br>
+
                                 <div class="form-group">
-                                  <label for="txt_datum">Datum dejavnosti:</label>
-                                  <input type="date" class="form-control" id="txt_datum" placeholder="Vnesite datum dejavnosti" name="txt_datum" value="<?php echo $select[0]["datum"]; ?>">
-                                  <?php echo form_error("txt_datum", "<div class='error'>", "</div>"); ?>
+                                  <label for="txt_datumZacetek">Datum začetka dejavnosti:</label>
+                                  <input type="date" class="form-control" id="txt_datumZacetek" placeholder="Kdaj se dejavnost prične?" name="txt_datumZacetek" value="<?php echo $select[0]["datumZacetek"]; ?>">
+                                  <?php echo form_error("txt_datumZacetek", "<div class='error'>", "</div>"); ?>
                                 </div>
+
+                                <br>
+
+                                <div class="form-group">
+                                <label for="txt_datumKonec">Datum konca dejavnosti:</label>
+                                <input type="date" class="form-control" id="txt_datumKonec" placeholder="Kdaj se dejavnost konča?" name="txt_datumKonec" value="<?php echo $select[0]["datumKonec"]; ?>">
+                                <?php echo form_error("txt_datumKonec", "<div class='error'>", "</div>"); ?>
+                                </div>
+
+                                <br>
 
                                 <div class="form-group">
                                   <input type="hidden" class="form-control" id="idDejavnost" placeholder="Vnesite število možnih mest" name="idDejavnost" value="<?php echo $select[0]["idDejavnost"]; ?>">

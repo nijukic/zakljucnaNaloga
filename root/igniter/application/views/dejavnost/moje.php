@@ -70,7 +70,8 @@
                                             }
 
 
-                                            echo "<p>" . "Datum začetka: " . $opcija["datum"] . "</p>";
+                                            echo "<p>" . "Datum začetka: " . $opcija["datumZacetek"] . "</p>";
+                                            echo "<p>" . "Datum konca: " . $opcija["datumKonec"] . "</p>";
 
                                                 foreach($opcija["povezava"] as $opcija2){
                                                     $z=0;
@@ -150,7 +151,8 @@
                                         }
 
 
-                                        echo "<p>" . "Datum začetka: " . $opcija["datum"] . "</p>";
+                                        echo "<p>" . "Datum začetka: " . $opcija["datumZacetek"] . "</p>";
+                                        echo "<p>" . "Datum konca: " . $opcija["datumKonec"] . "</p>";
 
                                             foreach($opcija["povezava"] as $opcija2){
                                                 $z=0;
@@ -204,7 +206,14 @@
                                         echo "<br><br>";
 
                                         echo form_open("dejavnost/spreminjanjeDejavnosti");
-                                        echo "<button type='submit'  name='gumb' id='gumb' class='btn btn-dark' value=" . $opcija["idDejavnost"]  . ">Spremeni dejavnost</button></div>";
+                                        echo "<button type='submit'  name='gumb' id='gumb' class='btn btn-dark' value=" . $opcija["idDejavnost"]  . ">Spremeni dejavnost</button>";
+                                        echo form_close();
+
+                                        
+                                        echo "<br><br>";
+
+                                        echo form_open("dejavnost/prikaziPrijavljene");
+                                        echo "<button type='submit'  name='gumb' id='gumb' class='btn btn-dark' value=" . $opcija["idDejavnost"]  . ">Udeleženci</button></div>";
                                         echo form_close(); 
 
                                         }

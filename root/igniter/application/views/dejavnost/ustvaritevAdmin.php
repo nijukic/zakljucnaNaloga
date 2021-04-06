@@ -87,9 +87,17 @@
                             <br>
 
                             <div class="form-group">
-                              <label for="txt_datum">Datum dejavnosti:</label>
-                              <input type="date" class="form-control" id="txt_datum" placeholder="Vnesite datum dejavnosti" name="txt_datum">
-                              <?php echo form_error("txt_datum", "<div class='error'>", "</div>"); ?>
+                              <label for="txt_datumZacetek">Datum začetka dejavnosti:</label>
+                              <input type="date" class="form-control" id="txt_datumZacetek" placeholder="Kdaj se dejavnost prične?" name="txt_datumZacetek">
+                              <?php echo form_error("txt_datumZacetek", "<div class='error'>", "</div>"); ?>
+                            </div>
+
+                            <br>
+
+                            <div class="form-group">
+                            <label for="txt_datumKonec">Datum konca dejavnosti:</label>
+                            <input type="date" class="form-control" id="txt_datumKonec" placeholder="Kdaj se dejavnost konča?" name="txt_datumKonec">
+                            <?php echo form_error("txt_datumKonec", "<div class='error'>", "</div>"); ?>
                             </div>
 
                             <br>

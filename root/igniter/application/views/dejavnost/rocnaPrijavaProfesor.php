@@ -48,6 +48,9 @@
                     
                         <?php
                             $ab=0;
+                            if($izbire == null){
+                                echo "<h1>Niste še ustvarili dejavnosti!</h1>";
+                            }     
                             foreach($izbire as $opcija){
                                     $ab=1;
                                     echo "<div class='col-12 col-md-5 col-lg-4'>";
@@ -67,7 +70,8 @@
                                     }
 
 
-                                    echo "<p>" . "Datum začetka: " . $opcija["datum"] . "</p>";
+                                    echo "<p>" . "Datum začetka: " . $opcija["datumZacetek"] . "</p>";
+                                    echo "<p>" . "Datum konca: " . $opcija["datumKonec"] . "</p>";
 
                                         foreach($opcija["povezava"] as $opcija2){
                                             $z=0;
@@ -128,9 +132,6 @@
 
                                 echo "</div></div><br>";
 
-                            }
-                            if($ab==0){
-                                echo "<h1>Ni dejavnosti</h1>";
                             }
 
 

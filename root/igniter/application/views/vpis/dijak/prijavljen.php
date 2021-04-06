@@ -46,17 +46,17 @@
                                 echo "<div class='cellContent border'>";
                                     if($obvestilo["odobreno"] == 1){
                                         echo "<div class='prijavaOdobrena' style='background-color:90be6d;'>";
-                                            echo "Prijava na dejavnost: " . $obvestilo["naziv"] . " - odobrena";
+                                            echo "Prijava na dejavnost: " . $obvestilo["naziv"] . " - odobrena, " . $obvestilo["casVnosa"];
                                         echo "</div>";
                                     }
                                     elseif($obvestilo["odobreno"] == 2){
                                         echo "<div class='prijavaZavrnjena' style='background-color:e5383b;'>";
-                                            echo "Prijava na dejavnost:  " . $obvestilo["naziv"] . " - zavrnjena";
+                                            echo "Prijava na dejavnost:  " . $obvestilo["naziv"] . " - zavrnjena, " . $obvestilo["casVnosa"];
                                         echo "</div>";
                                     }
                                     elseif($obvestilo["odobreno"] == 0){
                                         echo "<div class='prijavaPoslana' style='background-color:fee440;'>";
-                                            echo "Prijava na dejavnost:  " . $obvestilo["naziv"] . " - čaka na odobritev";
+                                            echo "Prijava na dejavnost:  " . $obvestilo["naziv"] . " - čaka na odobritev, " . $obvestilo["casVnosa"];
                                         echo "</div>";
                                     }
                                 echo "</div>";
