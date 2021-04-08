@@ -25,12 +25,24 @@
                 <div class="wrapper">
 
                 <nav class="navbar navigacija sticky-top">
-
-                    <button class="btn btn-outline-dark" type="button">
-                        <span onclick="openNav()" style="color:black"><img src="/igniter/assets/img/Hamburger_icon.svg.png" style="width:30px;"></span>
-                        <a href="javascript:void(0)" class="closebtn" aria-label="Close" onclick="closeNav()"><img src="/igniter/assets/img/x.svg"></a>
-                    </button>
-
+                    
+                    <a href="#" class="link" onclick="openNav()">
+                      <svg class="settings-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+                       <g class="settings-icon__group settings-icon__group--1">
+                         <line class="settings-icon__line" x1="80" y1="15" x2="80" y2="85"/>
+                         <rect class="settings-icon__rect" x="75" y="25" width="15" height="15"/>
+                        </g>
+                       <g class="settings-icon__group settings-icon__group--2">
+                         <line class="settings-icon__line" x1="50" y1="15" x2="50" y2="85"/>
+                         <rect class="settings-icon__rect" x="42" y="60" width="15" height="15"/>
+                       </g>
+                       <g class="settings-icon__group settings-icon__group--3">
+                         <line class="settings-icon__line" x1="20" y1="15" x2="20" y2="85"/>
+                         <rect class="settings-icon__rect" x="13" y="35" width="15" height="15"/>
+                       </g>
+                      </svg>
+                     </a>
+                    
                     <h1 class="welcome">Prijavljeni ste kot <?php  echo $this->session->userdata("ime")?>
 
                     </h1>
@@ -44,14 +56,15 @@
 
                 <div class="container">
                     
-                    <div class="isci">
+                    <div class="iskalnik">
+                        <br>
                         <?php echo form_open("prijava/iskanjeUporabnikov");?>
-                                    <div class="form-group">
-                                        <label for="txt_iskalniNiz">Iščite uporabnike:</label>
-                                        <input type="text" class="form-control" id="txt_iskalniNiz" placeholder="Vnesite ime, priimek ali vlogo" name="txt_iskalniNiz">
-                                        <?php echo form_error("txt_iskalniNiz", "<div class='alert alert-danger error'>", "</div>"); ?>
-                                    </div>
-                                    <button type="submit" class="btn btn-dark">Išči</button>
+                            <div class="form-group">
+                                <label for="txt_iskalniNiz">Iščite uporabnike:</label>
+                                <input type="text" class="form-control" id="txt_iskalniNiz" placeholder="Vnesite ime, priimek ali vlogo" name="txt_iskalniNiz">
+                                 <?php echo form_error("txt_iskalniNiz", "<div class='alert alert-danger error'>", "</div>"); ?>
+                            </div>
+                            <button type="submit" class="btn btn-dark">Išči</button>
                         <?php echo form_close() ?>
 
                     </div>
@@ -59,7 +72,7 @@
                     <div class="row">
                         <?php
                         if($uporabniki == null){
-                            echo "<h1>V bazi ni uporabnikov, ki ustrezajo tem pogojem!</h1>";
+                            echo "<br><h3>V bazi ni uporabnikov, ki ustrezajo tem pogojem!</h3>";
                         }
                         foreach($uporabniki as $uporabnik){
                             if($uporabnik["vloga"] != "admin"){

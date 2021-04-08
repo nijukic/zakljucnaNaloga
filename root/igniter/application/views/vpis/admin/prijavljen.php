@@ -39,14 +39,47 @@
                     <a href="javascript:void(0)" class="closebtn" aria-label="Close" onclick="closeNav()"><img src="/igniter/assets/img/x.svg"></a>
                 </div>
 
-                <div class="container">
-                    
-                    <div class="col-12">
-                    
-                        
-                        
+                <div class="container-fluid">
+                    <div class="row">
+                        <?php
+                        if($obvestila == null){
+                            echo "<h1>Ni dogodkov</h1>";
+                        }
+                        else{                        
+                        foreach($obvestila as $obvestilo){
+                            echo "<div class='col-12 col-md-6 col-lg-4 vsebina'>";
+                                echo "<div class='cellContent border'>";
+                                    if($obvestilo["odobreno"] == 1){
+                                        echo "<div class='prijavaOdobrena' style='background-color:90be6d;'>";
+                                            echo "Prijava na dejavnost: " . $obvestilo["naziv"] . " - odobrena, " . $obvestilo["casVnosa"] . "<br>" . 
+                                            $obvestilo["ime"] . " " .  $obvestilo["priimek"];
+                                        echo "</div>";
+                                    }
+                                    elseif($obvestilo["odobreno"] == 2){
+                                        echo "<div class='prijavaZavrnjena' style='background-color:e5383b;'>";
+                                            echo "Prijava na dejavnost:  " . $obvestilo["naziv"] . " - zavrnjena, " . $obvestilo["casVnosa"] . "<br>" . 
+                                            $obvestilo["ime"] . " " .  $obvestilo["priimek"];
+                                        echo "</div>";
+                                    }
+                                    elseif($obvestilo["odobreno"] == 0 and isset($obvestilo["odobreno"]) == true){
+                                        echo "<div class='prijavaPoslana' style='background-color:fee440;'>";
+                                            echo "Prijava na dejavnost:  " . $obvestilo["naziv"] . " - čaka na odobritev, " . $obvestilo["casVnosa"] . "<br>" . 
+                                            $obvestilo["ime"] . " " .  $obvestilo["priimek"];
+                                        echo "</div>";
+                                    }
+                                    else{
+                                      echo "<div class='dejavnostUstvarjena' style='background-color:fee440;'>";
+                                          echo "Prijava na dejavnost:  " . $obvestilo["naziv"] . " - dejavnost ustvarjena, " . $obvestilo["casVnosa"] . "<br>" . 
+                                          $obvestilo["ime"] . " " .  $obvestilo["priimek"];
+                                      echo "</div>";
+                                  }
+                                echo "</div>";
+                            echo "</div>";
+                        }
+                    }
+                        ?>
                     </div>
-                        
+
                 </div>
 
             </div>

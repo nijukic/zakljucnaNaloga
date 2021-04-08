@@ -6,14 +6,14 @@
         <?php
         if($this->session->flashdata("succes")){
             ?>
-        <div class="btn btn-success" id="plsgoaway">
+        <div class="btn btn-success" id="goaway">
             <?php echo $this->session->flashdata("succes") ?>        
         </div>
         <?php        
             }
         elseif($this->session->flashdata("error")){
                 ?>
-        <div class="btn btn-danger" id="plsgoaway">
+        <div class="btn btn-danger" id="goaway">
             <?php echo $this->session->flashdata("error") ?>        
         </div>
         <?php        
@@ -218,7 +218,7 @@
 
             });
             function hideMessage() {
-                document.getElementById("plsgoaway").style.display = "none";
+                document.getElementById("goaway").style.display = "none";
             };
             setTimeout(hideMessage, 3000);
         </script>

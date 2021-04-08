@@ -18,6 +18,10 @@
             function closeNav() {
               document.getElementById("mySidenav").style.width = "0";
             }
+            function hideMessage() {
+                document.getElementById("goaway").style.display = "none";
+            };
+            setTimeout(hideMessage, 10000);
         </script>
 
     </body>

@@ -25,18 +25,30 @@
                 <div class="wrapper">
 
                 <nav class="navbar navigacija sticky-top">
-
-                    <button class="btn btn-outline-dark" type="button">
-                        <span onclick="openNav()" style="color:black"><img src="/igniter/assets/img/Hamburger_icon.svg.png" style="width:30px;"></span>
-                        <a href="javascript:void(0)" class="closebtn" aria-label="Close" onclick="closeNav()"><img src="/igniter/assets/img/x.svg"></a>
-                    </button>
-
+                    
+                    <a href="#" class="link" onclick="openNav()">
+                      <svg class="settings-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+                       <g class="settings-icon__group settings-icon__group--1">
+                         <line class="settings-icon__line" x1="80" y1="15" x2="80" y2="85"/>
+                         <rect class="settings-icon__rect" x="75" y="25" width="15" height="15"/>
+                        </g>
+                       <g class="settings-icon__group settings-icon__group--2">
+                         <line class="settings-icon__line" x1="50" y1="15" x2="50" y2="85"/>
+                         <rect class="settings-icon__rect" x="42" y="60" width="15" height="15"/>
+                       </g>
+                       <g class="settings-icon__group settings-icon__group--3">
+                         <line class="settings-icon__line" x1="20" y1="15" x2="20" y2="85"/>
+                         <rect class="settings-icon__rect" x="13" y="35" width="15" height="15"/>
+                       </g>
+                      </svg>
+                     </a>
+                    
                     <h1 class="welcome">Prijavljeni ste kot <?php  echo $this->session->userdata("ime")?>
 
                     </h1>
-                    <?php echo "<a class=logout href=". site_url() . "/prijava/izpis" . ">Odjava</a>" ?>    
+                    <?php echo "<a class=logout href=". site_url() . "/prijava/izpis" . ">Odjava</a>" ?>  
                     
-                </nav><br>
+                </nav>
                 <div id="mySidenav" class="sidenav">
                     <br>
                     <?php $this->load->view("meniProfesor"); ?>
@@ -118,13 +130,13 @@
                                     }
 
 
+                                    }
+
                                     echo "<br>".form_open("dejavnost/rocnaPrijavaDijaki");
                                     echo "<button type='submit'  name='gumb' id='gumb' class='btn btn-dark' value=" . $opcija["idDejavnost"]  . ">Prijavi dijake</button>";
                                     echo form_close(); 
 
                                     echo "<br><br>";
-
-                                    }
                             ?>
                                 <br>
 

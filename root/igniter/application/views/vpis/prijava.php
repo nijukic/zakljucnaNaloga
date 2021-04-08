@@ -6,14 +6,14 @@
         <?php
             if($this->session->flashdata("succes")){
                 ?>
-            <div class="btn btn-success">
+            <div class="btn btn-success" id="goaway">
                 <?php echo $this->session->flashdata("succes") ?>        
             </div>
             <?php        
                 }
             elseif($this->session->flashdata("error")){
                     ?>
-            <div class="btn btn-danger">
+            <div class="btn btn-danger" id="goaway">
                 <?php echo $this->session->flashdata("error") ?>        
             </div>
             <?php        
@@ -25,13 +25,9 @@
             <div class="wrapper">
 
                 <nav class="navbar navigacija sticky-top">
-                    
-                    <div class="container">
                         
                         <h1 class="welcome" style="align-content: center;">Prijava</h1>
-                        
-                    </div>
-                    
+     
                 </nav>
                     
                 <div class="container">

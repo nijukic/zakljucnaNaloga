@@ -48,8 +48,10 @@ public function mojeDejavnosti($idOseba){
     $this->db->from("dejavnost");
     $this->db->join("oseba_has_dejavnost", "dejavnost.idDejavnost=oseba_has_dejavnost.Dejavnost_idDejavnost");
     $this->db->where("oseba_has_dejavnost.Oseba_idOseba", $idOseba);
+    $this->db->where("avtor", 1);
     $query = $this->db->get();
     return $rezultat = $query->result_array();
+    
 }
 
 public function mojeDejavnostiDijak($idOseba){
@@ -408,6 +410,38 @@ public function domovDijak($idOseba){
     $this->db->join("oseba_has_dejavnost", "idOseba=Oseba_idOseba");
     $this->db->join("dejavnost", "Dejavnost_idDejavnost=idDejavnost");
     $this->db->where("idOseba", $idOseba);
+    $this->db->order_by('casVnosa', 'DESC');
+    $query = $this->db->get();
+    return $rezultat = $query->result_array(); 
+}
+
+public function domovProfesor($idOseba){
+    $this->db->distinct();
+    $this->db->select('Dejavnost_idDejavnost');
+    $this->db->from('oseba_has_dejavnost');
+    $this->db->where("Oseba_idOseba", $idOseba);
+    $this->db->where("avtor", 1);
+    
+    $where_clause = $this->db->get_compiled_select();
+
+
+    $this->db->select("odobreno, naziv, casVnosa, ime, priimek");
+    $this->db->from("oseba");
+    $this->db->join("oseba_has_dejavnost", "idOseba=Oseba_idOseba");
+    $this->db->join("dejavnost", "Dejavnost_idDejavnost=idDejavnost");
+    $this->db->where("`Dejavnost_idDejavnost` IN ($where_clause)", NULL, FALSE);
+    $this->db->order_by('casVnosa', 'DESC');
+    $query = $this->db->get();
+    return $rezultat = $query->result_array(); 
+}
+
+public function domovAdmin(){
+    $this->db->select("odobreno, naziv, casVnosa, ime, priimek, vloga");
+    $this->db->from("oseba");
+    $this->db->join("oseba_has_dejavnost", "idOseba=Oseba_idOseba");
+    $this->db->join("dejavnost", "Dejavnost_idDejavnost=idDejavnost");
+    $this->db->order_by('casVnosa', 'DESC');
+    $this->db->limit("50");
     $query = $this->db->get();
     return $rezultat = $query->result_array(); 
 }
@@ -437,22 +471,50 @@ public function pridobiUdelezence($idDejavnost){
     return $rezultat = $query->result_array(); 
 }
 
-public function ustvariPrisotnost($idDejavnosti, $idDijaka, $zacetek, $konec){
-
-    $stDni = $konec->diff($zacetek)->format("%a");
-
-    $this->db->select("trajanje, idProgram");
-    $this->db->from("program");
-    $this->db->where("Sola_idSola", $idSole);
-
-
-    $this->db->select("nazivPrograma, idProgram");
-    $this->db->from("program");
-    $this->db->where("Sola_idSola", $idSole);
+public function potrditevUstvariPrisotnost($idDejavnost, $idDijaka){
+    $this->db->select("datumZacetek, datumKonec");
+    $this->db->from("dejavnost");
+    $this->db->where("idDejavnost", $idDejavnost);
     $query = $this->db->get();
-    $rezultat = $query->result_array(); 
-    
+    $rezultat = $query->result_array();
+
+    $datumi = array();
+    $zacetek =  strtotime($rezultat[0]["datumZacetek"]);
+    $konec = strtotime($rezultat[0]["datumKonec"]);
+    $step = '+1 day';
+    $output_format = 'Y/m/d';
+    while( $zacetek <= $konec ) {
+        $datumi[] = date($output_format, $zacetek);
+        $zacetek = strtotime($step, $zacetek);
+    }
+
+    foreach($datumi as $datum){
+        echo $datum;
+
+        $prisotnost = array(
+            'idOseba' => $idDijaka,
+            'idDejavnost' => $idDejavnost,
+            'datum' => $datum
+        );
+
+        $this->db->insert("prisotnost", $prisotnost);
+    }
 }
+
+public function izbrisiPrisotnost($idDejavnost, $idOseba){
+    $this->db->where("idDejavnost", $idDejavnost);
+    $this->db->where("idOseba", $idOseba);
+    $this->db->delete("prisotnost");
+}
+
+
+
+public function izbrisiPrisotnostZaOsebo($idDejavnost, $idOseba){
+    $this->db->where("idDejavnost", $idDejavnost);
+    $this->db->where("idOseba", $idOseba);
+    $this->db->delete("prisotnost");
+}
+
 
 
 

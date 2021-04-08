@@ -41,8 +41,12 @@
                 <div class="container-fluid">
                     <div class="row">
                         <?php
+                        if($obvestila == null){
+                            echo "<h1>Ni dogodkov</h1>";
+                        }
+                        else{                        
                         foreach($obvestila as $obvestilo){
-                            echo "<div class='col-12 col-md-6 vsebina'>";
+                            echo "<div class='col-12 col-md-6 col-lg-4 vsebina'>";
                                 echo "<div class='cellContent border'>";
                                     if($obvestilo["odobreno"] == 1){
                                         echo "<div class='prijavaOdobrena' style='background-color:90be6d;'>";
@@ -62,6 +66,7 @@
                                 echo "</div>";
                             echo "</div>";
                         }
+                    }
                         ?>
                     </div>
 

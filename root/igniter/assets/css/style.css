@@ -15,6 +15,7 @@ body::after{
     position: absolute;
     z-index: -1;   
 }
+
 .sidenav {
     height: 100%; 
     width: 0;
@@ -26,6 +27,10 @@ body::after{
     overflow-x: hidden; 
     padding-top: 60px;
     transition: 0.5s; 
+    position: absolute;
+    z-index: 10;  
+    font-family: 'Poiret One', cursive;
+    font-weight: bold;
 }
 .sidenav a {
     padding: 8px 8px 8px 32px;
@@ -34,7 +39,10 @@ body::after{
     color: gray;
     display: block;
     transition: 0.3s;
-
+}
+.container h1,h2,h3,h4{
+    font-family: 'Poiret One', cursive;
+    font-weight: bold;
 }
 .sidenav a:hover {
     color: black;
@@ -59,6 +67,7 @@ nav{
     font-weight: bold;
     font-size: 30px;
     color: black!important;
+    font-family: 'Varela Round', sans-serif;
 }
 .cellContent{
     margin: 20px;
@@ -77,6 +86,7 @@ nav{
 .footerText{
     text-align: center;
     color: white;
+    font-family: 'Varela Round', sans-serif;
 }
 .welcome{
     color: white;
@@ -98,13 +108,13 @@ textarea {
     overflow: auto;
 }
 
-/* This is a single-line comment */
 .nav {
-  display: flex;
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);  
+    display: flex;
+    position: relative;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    
 }
 .link {
   display: flex;

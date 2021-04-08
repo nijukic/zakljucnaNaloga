@@ -202,78 +202,9 @@ class Dejavnost extends CI_Controller{
         if($this->session->userdata("vloga") != "profesor"){
             redirect("");
         }
-        else{
-            $rezultat["izbire"] = $this->dejavnost_model->mojeDejavnosti($this->session->userdata("idOseba"));
-            $rezultat["vloga"] = "profesor";
-            $st=0;
-            foreach($rezultat["izbire"] as $opcija){
-                $rezultat["izbire"][$st]["mozneSole"] = explode(";", $opcija["mozneSole"]);
-                $rezultat["izbire"][$st]["mozniProgrami"] = explode(";", $opcija["mozniProgrami"]);
-                $rezultat["izbire"][$st]["mozniLetniki"] = explode(";", $opcija["mozniLetniki"]);
-                $rezultat["izbire"][$st]["mozniOddelki"] = explode(";", $opcija["mozniOddelki"]);
-    
-                $key = array_search("", $rezultat["izbire"][$st]["mozneSole"]);
-                unset($rezultat["izbire"][$st]["mozneSole"][$key]);
-        
-                $key = array_search("", $rezultat["izbire"][$st]["mozniProgrami"]);
-                unset($rezultat["izbire"][$st]["mozniProgrami"][$key]);
-        
-                $key = array_search("", $rezultat["izbire"][$st]["mozniLetniki"]);
-                unset($rezultat["izbire"][$st]["mozniLetniki"][$key]);
-        
-                $key = array_search("", $rezultat["izbire"][$st]["mozniOddelki"]);
-                unset($rezultat["izbire"][$st]["mozniOddelki"][$key]);
-                $st++;
-            }
-    
-            //print_r($rezultat["izbire"]);
-            if($rezultat["izbire"] != NULL){
-                for($x=min(array_keys($rezultat["izbire"])); $x<max(array_keys($rezultat["izbire"]))+1; $x++){
-    
-    
-                    $y=0;
-                    foreach($rezultat["izbire"] as $opcija){
-    
-                    $rezultat["izbire"][$x]["povezava"][$y] = $this->dejavnost_model->poveziVse($rezultat["izbire"][$x]["mozneSole"][$y], 
-                    $rezultat["izbire"][$x]["mozniProgrami"],
-                    $rezultat["izbire"][$x]["mozniLetniki"],
-                    $rezultat["izbire"][$x]["mozniOddelki"]);
-                    }
-                
-                }
-            
-            $this->load->view("dejavnost/moje", $rezultat);
-            }
-            else{
-                $this->load->view("dejavnost/moje", $rezultat);
-            }  
-            //print_r($rezultat["izbire"]);
-    
-    
-    
-            //$st=0;
-            //foreach($rezultat["izbire"] as $opcija){
-            //    $rezultat["izbire"][$st]["imenaSol"] = $this->dejavnost_model->imenaSol($opcija["mozneSole"]);
-            //    $rezultat["izbire"][$st]["imenaProgramov"] = $this->dejavnost_model->imenaProgramov($opcija["mozniProgrami"]);
-            //    $rezultat["izbire"][$st]["imenaLetnikov"] = $this->dejavnost_model->imenaLetnikov($opcija["mozniLetniki"]);
-            //    $rezultat["izbire"][$st]["imenaOddelkov"] = $this->dejavnost_model->imenaOddelkov($opcija["mozniOddelki"]);
-            //    $st++;
-            //}
-        }
-
-        
-
-        
-    }
-
-    public function mojeDejavnostiDijak(){
-        if($this->session->userdata("vloga") != "dijak"){
-            redirect("");
-        }
-
-        $rezultat["izbire"] = $this->dejavnost_model->mojeDejavnostiDijak($this->session->userdata("idOseba"));
-        $rezultat["vloga"] = "dijakPotrjene";
+        $rezultat["izbire"] = $this->dejavnost_model->mojeDejavnosti($this->session->userdata("idOseba"));
         $st=0;
+        #print_r($rezultat["izbire"]);
         if($rezultat["izbire"] != NULL){
         foreach($rezultat["izbire"] as $opcija){
             $rezultat["izbire"][$st]["mozneSole"] = explode(";", $opcija["mozneSole"]);
@@ -294,20 +225,107 @@ class Dejavnost extends CI_Controller{
             unset($rezultat["izbire"][$st]["mozniOddelki"][$key]);
             $st++;
         }
+        #print_r($rezultat["izbire"]);
         if($rezultat["izbire"] != NULL){
-            for($x=min(array_keys($rezultat["izbire"])); $x<max(array_keys($rezultat["izbire"]))+1; $x++){
+        for($x=min(array_keys($rezultat["izbire"])); $x<max(array_keys($rezultat["izbire"]))+1; $x++){
+            #echo $rezultat["izbire"][$x]["naziv"];
 
-
-                $y=0;
+            $y=0;
+            foreach($rezultat["izbire"][$x]["mozneSole"] as $nekaj){
                 foreach($rezultat["izbire"] as $opcija){
-
-                $rezultat["izbire"][$x]["povezava"][$y] = $this->dejavnost_model->poveziVse($rezultat["izbire"][$x]["mozneSole"][$y], 
-                $rezultat["izbire"][$x]["mozniProgrami"],
-                $rezultat["izbire"][$x]["mozniLetniki"],
-                $rezultat["izbire"][$x]["mozniOddelki"]);
+                    if(array_key_exists($y, $rezultat["izbire"][$x]["mozneSole"])){
+                        $rezultat["izbire"][$x]["naziv"] . $rezultat["izbire"][$x]["mozneSole"][$y] . "<br>";
+                        $rezultat["izbire"][$x]["povezava"][$y] = $this->dejavnost_model->poveziVse($rezultat["izbire"][$x]["mozneSole"][$y], 
+                        $rezultat["izbire"][$x]["mozniProgrami"],
+                        $rezultat["izbire"][$x]["mozniLetniki"],
+                        $rezultat["izbire"][$x]["mozniOddelki"]);
+                        $y=$y+1;
+                    }
+    
                 }
-            
             }
+
+            
+        }
+        #print_r($rezultat);
+            $this->load->view("dejavnost/moje", $rezultat);
+            }
+            else{
+                $this->load->view("dejavnost/moje", $rezultat);
+            }  
+            //print_r($rezultat["izbire"]);
+    
+    
+    
+            //$st=0;
+            //foreach($rezultat["izbire"] as $opcija){
+            //    $rezultat["izbire"][$st]["imenaSol"] = $this->dejavnost_model->imenaSol($opcija["mozneSole"]);
+            //    $rezultat["izbire"][$st]["imenaProgramov"] = $this->dejavnost_model->imenaProgramov($opcija["mozniProgrami"]);
+            //    $rezultat["izbire"][$st]["imenaLetnikov"] = $this->dejavnost_model->imenaLetnikov($opcija["mozniLetniki"]);
+            //    $rezultat["izbire"][$st]["imenaOddelkov"] = $this->dejavnost_model->imenaOddelkov($opcija["mozniOddelki"]);
+            //    $st++;
+            //}
+        }
+
+    else{
+        $this->load->view("dejavnost/moje", $rezultat);
+    
+    }
+        
+    
+    }
+
+    public function mojeDejavnostiDijak(){
+        if($this->session->userdata("vloga") != "dijak"){
+            redirect("");
+        }
+        $rezultat["izbire"] = $this->dejavnost_model->mojeDejavnostiDijak($this->session->userdata("idOseba"));
+        $rezultat["vloga"] = "dijakPotrjene";
+        $st=0;
+                #print_r($rezultat["izbire"]);
+                if($rezultat["izbire"] != NULL){
+                    foreach($rezultat["izbire"] as $opcija){
+                        $rezultat["izbire"][$st]["mozneSole"] = explode(";", $opcija["mozneSole"]);
+                        $rezultat["izbire"][$st]["mozniProgrami"] = explode(";", $opcija["mozniProgrami"]);
+                        $rezultat["izbire"][$st]["mozniLetniki"] = explode(";", $opcija["mozniLetniki"]);
+                        $rezultat["izbire"][$st]["mozniOddelki"] = explode(";", $opcija["mozniOddelki"]);
+            
+                        $key = array_search("", $rezultat["izbire"][$st]["mozneSole"]);
+                        unset($rezultat["izbire"][$st]["mozneSole"][$key]);
+                
+                        $key = array_search("", $rezultat["izbire"][$st]["mozniProgrami"]);
+                        unset($rezultat["izbire"][$st]["mozniProgrami"][$key]);
+                
+                        $key = array_search("", $rezultat["izbire"][$st]["mozniLetniki"]);
+                        unset($rezultat["izbire"][$st]["mozniLetniki"][$key]);
+                
+                        $key = array_search("", $rezultat["izbire"][$st]["mozniOddelki"]);
+                        unset($rezultat["izbire"][$st]["mozniOddelki"][$key]);
+                        $st++;
+                    }
+                    #print_r($rezultat["izbire"]);
+                    if($rezultat["izbire"] != NULL){
+                    for($x=min(array_keys($rezultat["izbire"])); $x<max(array_keys($rezultat["izbire"]))+1; $x++){
+                        #echo $rezultat["izbire"][$x]["naziv"];
+            
+                        $y=0;
+                        foreach($rezultat["izbire"][$x]["mozneSole"] as $nekaj){
+                            foreach($rezultat["izbire"] as $opcija){
+                                if(array_key_exists($y, $rezultat["izbire"][$x]["mozneSole"])){
+                                    $rezultat["izbire"][$x]["naziv"] . $rezultat["izbire"][$x]["mozneSole"][$y] . "<br>";
+                                    $rezultat["izbire"][$x]["povezava"][$y] = $this->dejavnost_model->poveziVse($rezultat["izbire"][$x]["mozneSole"][$y], 
+                                    $rezultat["izbire"][$x]["mozniProgrami"],
+                                    $rezultat["izbire"][$x]["mozniLetniki"],
+                                    $rezultat["izbire"][$x]["mozniOddelki"]);
+                                    $y=$y+1;
+                                }
+                
+                            }
+                        }
+            
+                        
+                    }
+                    #print_r($rezultat);
             $this->load->view("dejavnost/mojeDijak", $rezultat);
         }
         else{
@@ -346,68 +364,46 @@ class Dejavnost extends CI_Controller{
             $rezultat["izbire"] = $this->dejavnost_model->pridobiDejavnosti($this->session->userdata("idOseba"));
             $rezultat["vloga"] = "dijak";
             $st=0;
-            foreach($rezultat["izbire"] as $opcija){
-                $rezultat["izbire"][$st]["mozneSole"] = explode(";", $opcija["mozneSole"]);
-                $rezultat["izbire"][$st]["mozniProgrami"] = explode(";", $opcija["mozniProgrami"]);
-                $rezultat["izbire"][$st]["mozniLetniki"] = explode(";", $opcija["mozniLetniki"]);
-                $rezultat["izbire"][$st]["mozniOddelki"] = explode(";", $opcija["mozniOddelki"]);
-    
-                $key = array_search("", $rezultat["izbire"][$st]["mozneSole"]);
-                unset($rezultat["izbire"][$st]["mozneSole"][$key]);
-        
-                $key = array_search("", $rezultat["izbire"][$st]["mozniProgrami"]);
-                unset($rezultat["izbire"][$st]["mozniProgrami"][$key]);
-        
-                $key = array_search("", $rezultat["izbire"][$st]["mozniLetniki"]);
-                unset($rezultat["izbire"][$st]["mozniLetniki"][$key]);
-        
-                $key = array_search("", $rezultat["izbire"][$st]["mozniOddelki"]);
-                unset($rezultat["izbire"][$st]["mozniOddelki"][$key]);
-                $st++;
-            }
-
-           /* $obstojece = $this->dejavnost_model->prijavaNiMozna($this->session->userdata("idOseba"));
-            print_r($obstojece);
-            echo "<br>";
-            echo "<br>";
-            echo "<br>";
-            foreach($obstojece as $prosnja){
-                for($x=min(array_keys($rezultat["izbire"])); $x<max(array_keys($rezultat["izbire"]))+1; $x++){
-                    
-                    if($rezultat["izbire"][$x]["Dejavnost_idDejavnost"] == $prosnja){
-                        unset($rezultat["izbire"][$x]);
-                    }
-                }
-            }*/
             if($rezultat["izbire"] != NULL){
-                $zacne=min(array_keys($rezultat["izbire"]));
-                $konca=max(array_keys($rezultat["izbire"]));
+                foreach($rezultat["izbire"] as $opcija){
+                    $rezultat["izbire"][$st]["mozneSole"] = explode(";", $opcija["mozneSole"]);
+                    $rezultat["izbire"][$st]["mozniProgrami"] = explode(";", $opcija["mozniProgrami"]);
+                    $rezultat["izbire"][$st]["mozniLetniki"] = explode(";", $opcija["mozniLetniki"]);
+                    $rezultat["izbire"][$st]["mozniOddelki"] = explode(";", $opcija["mozniOddelki"]);
+        
+                    $key = array_search("", $rezultat["izbire"][$st]["mozneSole"]);
+                    unset($rezultat["izbire"][$st]["mozneSole"][$key]);
+            
+                    $key = array_search("", $rezultat["izbire"][$st]["mozniProgrami"]);
+                    unset($rezultat["izbire"][$st]["mozniProgrami"][$key]);
+            
+                    $key = array_search("", $rezultat["izbire"][$st]["mozniLetniki"]);
+                    unset($rezultat["izbire"][$st]["mozniLetniki"][$key]);
+            
+                    $key = array_search("", $rezultat["izbire"][$st]["mozniOddelki"]);
+                    unset($rezultat["izbire"][$st]["mozniOddelki"][$key]);
+                    $st++;
+                }
+                #print_r($rezultat["izbire"]);
                 if($rezultat["izbire"] != NULL){
-                    for($x=$zacne; $x<$konca+1; $x++){
-
-                        if(in_array($this->session->userdata("oddelekID"), $rezultat["izbire"][$x]["mozniOddelki"])){
-
-                        }
-                        else{
-                            unset($rezultat["izbire"][$x]);
-                        }
-                    }
-                    if($rezultat["izbire"] != NULL){
-                    for($x=min(array_keys($rezultat["izbire"])); $x<max(array_keys($rezultat["izbire"]))+1; $x++){
-
-                        $y=0;
-                        foreach($rezultat["izbire"] as $opcija){
-
-                        if(array_key_exists($x, $rezultat["izbire"])){
+                for($x=min(array_keys($rezultat["izbire"])); $x<max(array_keys($rezultat["izbire"]))+1; $x++){
+                    #echo $rezultat["izbire"][$x]["naziv"];
+        
+                    $y=0;
+                    foreach($rezultat["izbire"] as $opcija){
+                        if(array_key_exists($y, $rezultat["izbire"][$x]["mozneSole"])){
+                            #echo $rezultat["izbire"][$x]["naziv"] . $rezultat["izbire"][$x]["mozneSole"][$y] . "<br>";
                             $rezultat["izbire"][$x]["povezava"][$y] = $this->dejavnost_model->poveziVse($rezultat["izbire"][$x]["mozneSole"][$y], 
                             $rezultat["izbire"][$x]["mozniProgrami"],
                             $rezultat["izbire"][$x]["mozniLetniki"],
                             $rezultat["izbire"][$x]["mozniOddelki"]);
-                            }
+                            $y=$y+1;
                         }
-
+        
                     }
-
+                    
+                }
+                #print_r($rezultat);
                         $this->load->view("dejavnost/mojeDijak", $rezultat);
                     }
 
@@ -425,10 +421,7 @@ class Dejavnost extends CI_Controller{
             else{
                     $this->load->view("dejavnost/mojeDijak", $rezultat);
                 }
-        }
-        else{
-            redirect("");
-        }
+        
     }
     
 
@@ -655,6 +648,8 @@ class Dejavnost extends CI_Controller{
                 );
     
                 if($dejavnost["select"] = $this->dejavnost_model->posodobitevDejavnosti($podatki_array)){
+
+                    
     
                     if($this->session->userdata("vloga") == "admin"){
                         $this->session->set_flashdata("succes", "Dejavnost je bila uspešno spremenjena");
@@ -721,7 +716,7 @@ class Dejavnost extends CI_Controller{
             $this->db->where("idDejavnost", $id[0]);
             $this->db->update("dejavnost");
 
-            #$this->dejavnost_model->ustvariPrisotnost($id[0],  $id[1]);
+            $this->dejavnost_model->potrditevUstvariPrisotnost($id[0],$id[1]);
     
             $this->session->set_flashdata("succes", "Prošnja je bila odobrena!");
         
@@ -753,6 +748,8 @@ class Dejavnost extends CI_Controller{
         }
         
         if($this->session->userdata("vloga") == "admin"){
+            $this->dejavnost_model->izbrisiPrisotnostZaOsebo($id[0],$id[1]);
+
             $this->db->where("Dejavnost_idDejavnost", $id[0]);
             $this->db->where("Oseba_idOseba", $id[1]);
             $this->db->delete("oseba_has_dejavnost");
@@ -820,6 +817,7 @@ class Dejavnost extends CI_Controller{
         
         $rezultat["izbire"] = $this->dejavnost_model->vseDejavnosti();
         $st=0;
+        #print_r($rezultat["izbire"]);
         if($rezultat["izbire"] != NULL){
         foreach($rezultat["izbire"] as $opcija){
             $rezultat["izbire"][$st]["mozneSole"] = explode(";", $opcija["mozneSole"]);
@@ -840,18 +838,22 @@ class Dejavnost extends CI_Controller{
             unset($rezultat["izbire"][$st]["mozniOddelki"][$key]);
             $st++;
         }
-
+        #print_r($rezultat["izbire"]);
         if($rezultat["izbire"] != NULL){
         for($x=min(array_keys($rezultat["izbire"])); $x<max(array_keys($rezultat["izbire"]))+1; $x++){
-
+            #echo $rezultat["izbire"][$x]["naziv"];
 
             $y=0;
             foreach($rezultat["izbire"] as $opcija){
+                if(array_key_exists($y, $rezultat["izbire"][$x]["mozneSole"])){
+                    #echo $rezultat["izbire"][$x]["naziv"] . $rezultat["izbire"][$x]["mozneSole"][$y] . "<br>";
+                    $rezultat["izbire"][$x]["povezava"][$y] = $this->dejavnost_model->poveziVse($rezultat["izbire"][$x]["mozneSole"][$y], 
+                    $rezultat["izbire"][$x]["mozniProgrami"],
+                    $rezultat["izbire"][$x]["mozniLetniki"],
+                    $rezultat["izbire"][$x]["mozniOddelki"]);
+                    $y=$y+1;
+                }
 
-                $rezultat["izbire"][$x]["povezava"][$y] = $this->dejavnost_model->poveziVse($rezultat["izbire"][$x]["mozneSole"][$y], 
-                $rezultat["izbire"][$x]["mozniProgrami"],
-                $rezultat["izbire"][$x]["mozniLetniki"],
-                $rezultat["izbire"][$x]["mozniOddelki"]);
             }
             
         }
@@ -896,41 +898,44 @@ class Dejavnost extends CI_Controller{
         }    
             $st=0;
             if($rezultat["izbire"] != NULL){
-            foreach($rezultat["izbire"] as $opcija){
-                $rezultat["izbire"][$st]["mozneSole"] = explode(";", $opcija["mozneSole"]);
-                $rezultat["izbire"][$st]["mozniProgrami"] = explode(";", $opcija["mozniProgrami"]);
-                $rezultat["izbire"][$st]["mozniLetniki"] = explode(";", $opcija["mozniLetniki"]);
-                $rezultat["izbire"][$st]["mozniOddelki"] = explode(";", $opcija["mozniOddelki"]);
-    
-                $key = array_search("", $rezultat["izbire"][$st]["mozneSole"]);
-                unset($rezultat["izbire"][$st]["mozneSole"][$key]);
-        
-                $key = array_search("", $rezultat["izbire"][$st]["mozniProgrami"]);
-                unset($rezultat["izbire"][$st]["mozniProgrami"][$key]);
-        
-                $key = array_search("", $rezultat["izbire"][$st]["mozniLetniki"]);
-                unset($rezultat["izbire"][$st]["mozniLetniki"][$key]);
-        
-                $key = array_search("", $rezultat["izbire"][$st]["mozniOddelki"]);
-                unset($rezultat["izbire"][$st]["mozniOddelki"][$key]);
-                $st++;
-            }
-    
-            //print_r($rezultat["izbire"]);
-            if($rezultat["izbire"] != NULL){
-            for($x=min(array_keys($rezultat["izbire"])); $x<max(array_keys($rezultat["izbire"]))+1; $x++){
-    
-    
-                $y=0;
                 foreach($rezultat["izbire"] as $opcija){
-    
-                    $rezultat["izbire"][$x]["povezava"][$y] = $this->dejavnost_model->poveziVse($rezultat["izbire"][$x]["mozneSole"][$y], 
-                    $rezultat["izbire"][$x]["mozniProgrami"],
-                    $rezultat["izbire"][$x]["mozniLetniki"],
-                    $rezultat["izbire"][$x]["mozniOddelki"]);
+                    $rezultat["izbire"][$st]["mozneSole"] = explode(";", $opcija["mozneSole"]);
+                    $rezultat["izbire"][$st]["mozniProgrami"] = explode(";", $opcija["mozniProgrami"]);
+                    $rezultat["izbire"][$st]["mozniLetniki"] = explode(";", $opcija["mozniLetniki"]);
+                    $rezultat["izbire"][$st]["mozniOddelki"] = explode(";", $opcija["mozniOddelki"]);
+        
+                    $key = array_search("", $rezultat["izbire"][$st]["mozneSole"]);
+                    unset($rezultat["izbire"][$st]["mozneSole"][$key]);
+            
+                    $key = array_search("", $rezultat["izbire"][$st]["mozniProgrami"]);
+                    unset($rezultat["izbire"][$st]["mozniProgrami"][$key]);
+            
+                    $key = array_search("", $rezultat["izbire"][$st]["mozniLetniki"]);
+                    unset($rezultat["izbire"][$st]["mozniLetniki"][$key]);
+            
+                    $key = array_search("", $rezultat["izbire"][$st]["mozniOddelki"]);
+                    unset($rezultat["izbire"][$st]["mozniOddelki"][$key]);
+                    $st++;
                 }
-                
-            }
+                #print_r($rezultat["izbire"]);
+                if($rezultat["izbire"] != NULL){
+                for($x=min(array_keys($rezultat["izbire"])); $x<max(array_keys($rezultat["izbire"]))+1; $x++){
+                    #echo $rezultat["izbire"][$x]["naziv"];
+        
+                    $y=0;
+                    foreach($rezultat["izbire"] as $opcija){
+                        if(array_key_exists($y, $rezultat["izbire"][$x]["mozneSole"])){
+                            #echo $rezultat["izbire"][$x]["naziv"] . $rezultat["izbire"][$x]["mozneSole"][$y] . "<br>";
+                            $rezultat["izbire"][$x]["povezava"][$y] = $this->dejavnost_model->poveziVse($rezultat["izbire"][$x]["mozneSole"][$y], 
+                            $rezultat["izbire"][$x]["mozniProgrami"],
+                            $rezultat["izbire"][$x]["mozniLetniki"],
+                            $rezultat["izbire"][$x]["mozniOddelki"]);
+                            $y=$y+1;
+                        }
+        
+                    }
+                    
+                }
             if($this->session->userdata("vloga") == "admin"){
                 $this->load->view("dejavnost/rocnaPrijavaAdmin", $rezultat);
             }
@@ -1036,6 +1041,8 @@ class Dejavnost extends CI_Controller{
 
             $this->dejavnost_model->prosnjaZaPrijavoPotrjeno($x, $id);
 
+            $this->dejavnost_model->potrditevUstvariPrisotnost($x["Dejavnost_idDejavnost"],$x["Oseba_idOseba"]);
+
             }
 
             
@@ -1076,6 +1083,8 @@ class Dejavnost extends CI_Controller{
                     "odobreno" => 1
                 );
                 $this->dejavnost_model->avtomatskaPrijavaUstvariRelacijo($id, $relacija);
+
+                $this->dejavnost_model->potrditevUstvariPrisotnost($relacija["Dejavnost_idDejavnost"],$relacija["Oseba_idOseba"]);
             }
             $this->session->set_flashdata("succes", "Dijaki so bili uspešno prijavljeni");
             redirect("dejavnost/dodajanjeDijakov");
@@ -1133,6 +1142,8 @@ class Dejavnost extends CI_Controller{
         $id = $this->input->post("gumb");
 
         $id = explode(";", $id);
+
+        $this->dejavnost_model->izbrisiPrisotnostZaOsebo($id[0],$id[1]);
 
         $this->db->where("Dejavnost_idDejavnost", $id[0]);
         $this->db->where("Oseba_idOseba", $id[1]);
@@ -1217,6 +1228,8 @@ class Dejavnost extends CI_Controller{
             $this->db->set("moznaMesta", "moznaMesta-1", FALSE);
             $this->db->where("idDejavnost", $id[0]);
             $this->db->update("dejavnost");
+
+            $this->dejavnost_model->potrditevUstvariPrisotnost($id[0],$id[1]);
     
             $this->session->set_flashdata("succes", "Prošnja je bila odobrena!");
         
@@ -1255,6 +1268,8 @@ class Dejavnost extends CI_Controller{
         $udelezenci["udelezenci"] = $this->dejavnost_model->pridobiUdelezence($id);
         $this->load->view("dejavnost/udelezenci", $udelezenci);
     }
+
+
     
 
 }
