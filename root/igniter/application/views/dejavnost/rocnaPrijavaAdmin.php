@@ -83,58 +83,61 @@
                                     echo "<p>" . "Datum začetka: " . $opcija["datumZacetek"] . "</p>";
                                     echo "<p>" . "Datum konca: " . $opcija["datumKonec"] . "</p>";
 
-                                        foreach($opcija["povezava"] as $opcija2){
-                                            $z=0;
-                                            $vrednost="";
-                                            $vrednost2="";
-
-                                            foreach($opcija2 as $opcija3){
+                                    foreach($opcija["povezava"] as $opcija2){
+                                        $z=0;
+                                        $vrednost="";
+                                        $vrednost2="";
 
 
-                                        if($z!=0){
-                                            if($opcija3["nazivSole"] == $vrednost){
+                                        foreach($opcija2 as $opcija3){
 
-                                                if($opcija3["nazivPrograma"] == $vrednost2){
 
-                                                    echo $opcija3["stevilka"] . "." . $opcija3["crka"] . "<br>";
+                                            if($z!=0){
+                                                if($opcija3["nazivSole"] == $vrednost){
+
+                                                    if($opcija3["nazivPrograma"] == $vrednost2){
+
+                                                        echo $opcija3["stevilka"] . "." . $opcija3["crka"] . ", ";
+
+                                                    }
+                                                    else{
+                                                        echo "<br>" . $opcija3["nazivPrograma"] . "<br>";
+
+                                                        echo $opcija3["stevilka"] . "." . $opcija3["crka"] . ", ";
+                                                    }
 
                                                 }
                                                 else{
+                                                    echo $opcija3["nazivSole"] . "<br>";
+
                                                     echo $opcija3["nazivPrograma"] . "<br>";
 
-                                                    echo $opcija3["stevilka"] . "." . $opcija3["crka"] . "<br>";
+                                                    echo $opcija3["stevilka"] . "." . $opcija3["crka"] . ", ";
                                                 }
-
                                             }
                                             else{
-                                                echo $opcija3["nazivSole"] . "<br>";
+                                                echo "<br>" .  "<br>" . $opcija3["nazivSole"] . "<br>";
 
                                                 echo $opcija3["nazivPrograma"] . "<br>";
 
-                                                echo $opcija3["stevilka"] . "." . $opcija3["crka"] . "<br>";
+                                                echo $opcija3["stevilka"] . "." . $opcija3["crka"] . ", ";
                                             }
+                                            $vrednost2 = $opcija3["nazivPrograma"];
+                                            $vrednost = $opcija3["nazivSole"];
+                                            $z++;
+
                                         }
-                                        else{
-                                            echo $opcija3["nazivSole"] . "<br>";
-
-                                            echo $opcija3["nazivPrograma"] . "<br>";
-
-                                            echo $opcija3["stevilka"] . "." . $opcija3["crka"] . "<br>";
-                                        }
-                                        $vrednost2 = $opcija3["nazivPrograma"];
-                                        $vrednost = $opcija3["nazivSole"];
-                                        $z++;
-
-                                    }
 
 
-                                    }
 
-                                    echo "<br>".form_open("dejavnost/rocnaPrijavaDijaki");
+                                }
+
+                                    echo "<br><br>";
+                                    echo form_open("dejavnost/rocnaPrijavaDijaki");
                                     echo "<button type='submit'  name='gumb' id='gumb' class='btn btn-dark' value=" . $opcija["idDejavnost"]  . ">Prijavi dijake</button>";
                                     echo form_close(); 
 
-                                    echo "<br><br>";
+                                    echo "<br>";
 
                                     echo form_open("dejavnost/avtomatskaPrijava");
                                     echo "<button type='submit'  name='gumb' id='gumb' class='btn btn-dark' value=" . $opcija["idDejavnost"]  . ">Avtomatsko prijavi dijake</button>";

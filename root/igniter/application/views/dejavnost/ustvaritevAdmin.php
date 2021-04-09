@@ -79,13 +79,12 @@
 
                             <div class="form-group">
                                 Opis dejavnosti:<br>
-                            <textarea type="text" name="txt_opis" id="txt_opis" rows="10" cols="40">
-                            </textarea>
+                            <textarea type="text" name="txt_opis" id="txt_opis" rows="10" cols="40"></textarea>
                             <?php echo form_error("txt_opis", "<div class='error'>", "</div>"); ?>
                             </div>
 
 
-                            <div class="form-group">
+                            <div class="form-group" style="margin-left:25px;">
                               <label for="txt_malica">Malica:</label>
                               <br>
                               <input type="radio" class="form-check-input" id="txt_malica" name="txt_malica" value="1">
@@ -138,7 +137,6 @@
                             <div class="form-group">
                               <select class="form-control" id="txt_letnik" name="txt_letnik[]" multiple="multiple"> 
                               </select>
-                              <input type="button" id="select_all_letnik" name="select_all_letnik" value="Select All">
                               <?php echo form_error("txt_letnik", "<div class='error'>", "</div>"); ?>
                             </div>
 
@@ -147,7 +145,6 @@
                             <div class="form-group">
                               <select class="form-control" id="txt_oddelek" name="txt_oddelek[]" multiple="multiple">
                               </select>
-                              <input type="button" id="select_all_oddelek" name="select_all_oddelek" value="Select All">
                               <?php echo form_error("txt_oddelek", "<div class='error'>", "</div>"); ?>
                             </div>
                             
@@ -187,8 +184,25 @@
             }
             $(document).ready(function(){
               $('#txt_sola').multiselect({
+                includeSelectAllOption: true,
                 nonSelectedText: "Izberite šolo",
                 buttonWidth:"400px",
+                onSelectAll:function () {
+                  var sola_id = this.$select.val();
+                  if(sola_id.length > 0)
+                  {
+                    $.ajax({
+                      url:"<?php echo site_url() . "/dejavnost/fetch_programe";?>",
+                      method:"POST",
+                      data:{sola_id:sola_id},
+                      success:function(data)
+                      {
+                        $('#txt_program').html(data);
+                        $('#txt_program').multiselect('rebuild');
+                      }
+                    });
+                  }                  
+                },
                 onChange:function(option, checked){
                   var sola_id = this.$select.val();
                   if(sola_id.length > 0)
@@ -208,8 +222,25 @@
               });
 
               $('#txt_program').multiselect({
+                includeSelectAllOption: true,
                 nonSelectedText: "Izberite program",
                 buttonWidth:"400px",
+                onSelectAll:function () {
+                  var program_id = this.$select.val();
+                  if(program_id.length > 0)
+                  {
+                    $.ajax({
+                      url:"<?php echo site_url() . "/dejavnost/fetch_letnike";?>",
+                      method:"POST",
+                      data:{program_id:program_id},
+                      success:function(data)
+                      {
+                        $('#txt_letnik').html(data);
+                        $('#txt_letnik').multiselect('rebuild');
+                      }
+                    });
+                  }                  
+                },
                 onChange:function(option, checked){
                   var program_id = this.$select.val();
                   if(program_id.length > 0)
@@ -229,8 +260,25 @@
               });
 
               $('#txt_letnik').multiselect({
+                includeSelectAllOption: true,
                 nonSelectedText: "Izberite letnik",
                 buttonWidth:"400px",
+                onSelectAll:function () {
+                  var letnik_id = this.$select.val();
+                  if(letnik_id.length > 0)
+                  {
+                    $.ajax({
+                      url:"<?php echo site_url() . "/dejavnost/fetch_oddelke";?>",
+                      method:"POST",
+                      data:{letnik_id:letnik_id},
+                      success:function(data)
+                      {
+                        $('#txt_oddelek').html(data);
+                        $('#txt_oddelek').multiselect('rebuild');
+                      }
+                    });
+                  }                  
+                },                
                 onChange:function(option, checked){
                   var letnik_id = this.$select.val();
                   if(letnik_id.length > 0)
@@ -250,18 +298,12 @@
               });
 
               $('#txt_oddelek').multiselect({
+                includeSelectAllOption: true,
                 nonSelectedText: "Izberite oddelek",
                 buttonWidth:"400px"
 
               });
-
-              $('#select_all_letnik').click(function() {
-              $('#txt_letnik option').prop('selected', true);
-              });
               
-              $('#select_all_oddelek').click(function() {
-              $('#txt_oddelek option').prop('selected', true);
-              });
 
 
               });

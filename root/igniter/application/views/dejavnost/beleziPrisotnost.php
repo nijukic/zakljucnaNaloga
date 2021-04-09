@@ -67,22 +67,53 @@
                         <div class="row">
                             <?php
                                 if($udelezenci == null){
-                                    echo "<h1>Prijav na dejavnosti ni!</h1>";
-                                }      
-                                foreach($udelezenci as $opcija){
-
-                                    echo "<div class='col-12 col-sm-5 col-md-3 col-lg-3 col-xl-2 cellContent border'>";
-
-                                    echo "<h1>" . $opcija["naziv"] . "</h1>" . "<br>";
-
-                                    echo "<p>"  . $opcija["ime"] . " " . $opcija["priimek"] . ", " . $opcija["stevilka"] . "." . $opcija["crka"] .  "</p>"; 
-
-                                    echo "<p>" . $opcija["nazivPrograma"] . "</p>";
-
-                                    echo "<p>"  . $opcija["nazivSole"] .  "</p>";   
-                                    
-                                    echo "</div>";
+                                    echo "<h1>Ta dejavnost ni danes na urniku.</h1>";
                                 }
+                                else{
+                                    $this->session->set_userdata("prisotnost", $udelezenci[0]["idDejavnost"]);
+                                    $sez = array();      
+                                    foreach($udelezenci as $udelezenec){
+                                        if(in_array($udelezenec["idOseba"], $sez) == false){
+                                            array_push($sez, $udelezenec["idOseba"]);
+                                            echo "<div class='col-12 col-sm-5 col-md-3 col-lg-3 col-xl-2 cellContent border'>";
+                                            echo form_open("dejavnost/beleziPrisotnost_submit");
+                                            foreach($udelezenci as $primerjavaID){
+    
+                                                if($udelezenec["idOseba"] == $primerjavaID["idOseba"]){
+                                                        echo $primerjavaID["naziv"];
+                                                        echo "<br>"  . $udelezenec["ime"] . " " . $udelezenec["priimek"]; 
+                                                        echo "<br>"  . $primerjavaID["datum"] .  "<br>"; 
+                                                        ?>
+                                                        
+                                                        <input type="radio" class="form-check-input" id="txt_prisoten" name="txt_prisoten" value="1" <?php if($primerjavaID["prisoten"] == 1){
+                                                            echo "checked='checked'";
+                                                        } ?>>
+                                                        <label for="Da">Da</label><br>
+                                                        <input type="radio" class="form-check-input" id="txt_prisoten" name="txt_prisoten" value="0" <?php if($primerjavaID["prisoten"] == 0){
+                                                            echo "checked='checked'";
+                                                        } ?>>
+                                                        <label for="Ne">Ne</label><br>
+                
+                                                        <?php  
+                                                    
+                                                }
+            
+ 
+            
+                                            }
+                                                $seznam = $udelezenec["idDejavnost"] . ";" . $udelezenec["idOseba"];
+                                                echo "<button type='submit'  name='gumb' id='gumb' class='btn btn-dark' value=" . $seznam  . ">" . "Shrani</button>";
+                                                echo form_close();
+                                                echo "</div>";
+                                    }
+
+
+                                        
+    
+                                    }
+                                    
+                                }
+
                             ?>
                                 <br>
                         

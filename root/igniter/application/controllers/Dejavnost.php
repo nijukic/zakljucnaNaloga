@@ -53,7 +53,7 @@ class Dejavnost extends CI_Controller{
             array(
                 "field"=>"txt_naziv",
                 "label"=>"Naziv dejavnosti",
-                "rules"=>"required"
+                "rules"=>"required|is_unique[dejavnost.naziv]"
             ),
             array(
                 "field"=>"txt_mesta",
@@ -106,14 +106,14 @@ class Dejavnost extends CI_Controller{
 
         $this->form_validation->set_rules($config_pravila);
 
+        $podatki = $this->input->post();
+
         if($this->form_validation->run()==FALSE){
 
             $this->ustvari();
         }
         elseif($podatki["txt_datumZacetek"]<= $podatki["txt_datumKonec"]){
 
-            
-            $podatki = $this->input->post();
 
             $niz="";
 
@@ -309,6 +309,7 @@ class Dejavnost extends CI_Controller{
                         #echo $rezultat["izbire"][$x]["naziv"];
             
                         $y=0;
+                        $rezultat["izbire"][$x]["mentor"] = $this->dejavnost_model->pridobiMentorja($rezultat["izbire"][$x]["Dejavnost_idDejavnost"]);
                         foreach($rezultat["izbire"][$x]["mozneSole"] as $nekaj){
                             foreach($rezultat["izbire"] as $opcija){
                                 if(array_key_exists($y, $rezultat["izbire"][$x]["mozneSole"])){
@@ -506,7 +507,8 @@ class Dejavnost extends CI_Controller{
         if($this->session->userdata("vloga") != "profesor"){
             redirect("");
         }
-        $prosnjeUcencev["prosnje"] = $this->dejavnost_model->pridobiProsnjeDejavnost($this->session->userdata("idOseba"));
+        $id = $this->input->post("gumb");
+        $prosnjeUcencev["prosnje"] = $this->dejavnost_model->pridobiProsnjeDejavnost($this->session->userdata("idOseba"), $id);
 
         if($prosnjeUcencev["prosnje"] != NULL){
             for($x=0; $x<sizeof($prosnjeUcencev["prosnje"]); $x++){
@@ -597,7 +599,7 @@ class Dejavnost extends CI_Controller{
                 array(
                     "field"=>"txt_naziv",
                     "label"=>"Naziv dejavnosti",
-                    "rules"=>"required"
+                    "rules"=>"required|is_unique[dejavnost.naziv]"
                 ),
                 array(
                     "field"=>"txt_mesta",
@@ -629,14 +631,15 @@ class Dejavnost extends CI_Controller{
     
     
             $this->form_validation->set_rules($config_pravila);
+
+            $podatki = $this->input->post();
     
             if($this->form_validation->run()==FALSE){
     
                 $this->spreminjanjeDejavnosti();
             }
             elseif($podatki["txt_datumZacetek"]<=$podatki["txt_datumKonec"]){
-                $podatki = $this->input->post();
-    
+                
                 $podatki_array = array(
                     "naziv"=>$podatki["txt_naziv"],
                     "moznaMesta"=>$podatki["txt_mesta"],
@@ -653,12 +656,12 @@ class Dejavnost extends CI_Controller{
     
                     if($this->session->userdata("vloga") == "admin"){
                         $this->session->set_flashdata("succes", "Dejavnost je bila uspešno spremenjena");
-        
+                        $this->dejavnost_model->spreminjanjeUstvariPrisotnost($podatki["idDejavnost"]);                       
                         redirect("dejavnost/vseDejavnosti");
                     }
                     else if($this->session->userdata("vloga") == "profesor"){
                         $this->session->set_flashdata("succes", "Dejavnost je bila uspešno spremenjena");
-        
+                        $this->dejavnost_model->spreminjanjeUstvariPrisotnost($podatki["idDejavnost"]);
                         redirect("dejavnost/mojeDejavnosti");
                     }
                     
@@ -711,6 +714,11 @@ class Dejavnost extends CI_Controller{
             $this->db->where("Dejavnost_idDejavnost", $id[0]);
             $this->db->where("Oseba_idOseba", $id[1]);
             $this->db->update("oseba_has_dejavnost");
+
+            $this->db->set("casVnosa", "NOW()", FALSE);
+            $this->db->where("Dejavnost_idDejavnost", $id[0]);
+            $this->db->where("Oseba_idOseba", $id[1]);
+            $this->db->update("oseba_has_dejavnost");
     
             $this->db->set("moznaMesta", "moznaMesta-1", FALSE);
             $this->db->where("idDejavnost", $id[0]);
@@ -740,6 +748,11 @@ class Dejavnost extends CI_Controller{
 
         if($this->session->userdata("vloga") == "profesor"){
             $this->db->set("odobreno", 2, FALSE);
+            $this->db->where("Dejavnost_idDejavnost", $id[0]);
+            $this->db->where("Oseba_idOseba", $id[1]);
+            $this->db->update("oseba_has_dejavnost");
+
+            $this->db->set("casVnosa", "NOW()", FALSE);
             $this->db->where("Dejavnost_idDejavnost", $id[0]);
             $this->db->where("Oseba_idOseba", $id[1]);
             $this->db->update("oseba_has_dejavnost");
@@ -773,38 +786,41 @@ class Dejavnost extends CI_Controller{
         if($this->session->userdata("vloga") != "admin"){
             redirect("");
         }
-        
-        $prosnjeUcencev["prosnje"] = $this->dejavnost_model->pridobiProsnjeDejavnostAdmin();
-        if($prosnjeUcencev["prosnje"] != NULL){
-            for($x=0; $x<sizeof($prosnjeUcencev["prosnje"]); $x++){
-                $sez[$x] = $prosnjeUcencev["prosnje"][$x]["Dejavnost_idDejavnost"]; 
-            }
-
-            $prosnjeUcencev["prosnje"] = $this->dejavnost_model->pridobiProsnjeUcenecAdmin($sez);
-            if($prosnjeUcencev["prosnje"] != NULL){
-            for($x=0; $x<sizeof($prosnjeUcencev["prosnje"]); $x++){
-                $koncna["prosnje"][$x] = $this->dejavnost_model->dijaKiJePoslalProsnjo($prosnjeUcencev["prosnje"][$x]["Oseba_idOseba"],$prosnjeUcencev["prosnje"][$x]["Dejavnost_idDejavnost"]);
-            }
-
-            if($prosnjeUcencev["prosnje"] != NULL){
-                $this->load->view("dejavnost/prijave", $koncna);
-            }
-
-            else{
-                $koncna["prosnje"] = array();
-                $this->load->view("dejavnost/prijave", $koncna);
-            }
-            }
-            else{
-                $koncna["prosnje"] = array();
-                $this->load->view("dejavnost/prijave", $koncna);
-            }
-
-        }
         else{
-            $koncna["prosnje"] = array();
-            $this->load->view("dejavnost/prijave", $koncna);
-        }    
+            $id = $this->input->post("gumb");
+            $prosnjeUcencev["prosnje"] = $this->dejavnost_model->pridobiProsnjeDejavnostAdmin($id);
+            if($prosnjeUcencev["prosnje"] != NULL){
+                for($x=0; $x<sizeof($prosnjeUcencev["prosnje"]); $x++){
+                    $sez[$x] = $prosnjeUcencev["prosnje"][$x]["Dejavnost_idDejavnost"]; 
+                }
+    
+                $prosnjeUcencev["prosnje"] = $this->dejavnost_model->pridobiProsnjeUcenecAdmin($sez);
+                if($prosnjeUcencev["prosnje"] != NULL){
+                for($x=0; $x<sizeof($prosnjeUcencev["prosnje"]); $x++){
+                    $koncna["prosnje"][$x] = $this->dejavnost_model->dijaKiJePoslalProsnjo($prosnjeUcencev["prosnje"][$x]["Oseba_idOseba"],$prosnjeUcencev["prosnje"][$x]["Dejavnost_idDejavnost"]);
+                }
+    
+                if($prosnjeUcencev["prosnje"] != NULL){
+                    $this->load->view("dejavnost/prijave", $koncna);
+                }
+    
+                else{
+                    $koncna["prosnje"] = array();
+                    $this->load->view("dejavnost/prijave", $koncna);
+                }
+                }
+                else{
+                    $koncna["prosnje"] = array();
+                    $this->load->view("dejavnost/prijave", $koncna);
+                }
+    
+            }
+            else{
+                $koncna["prosnje"] = array();
+                $this->load->view("dejavnost/prijave", $koncna);
+            }    
+        }
+
 
 
         
@@ -986,22 +1002,25 @@ class Dejavnost extends CI_Controller{
         if($this->session->userdata("vloga") != "admin" and $this->session->userdata("vloga") != "profesor"){
             redirect("");
         }
-        $id = $this->input->post("gumb");
+        else{
+            $id = $this->input->post("gumb");
 
-        $dejavnost["dijaki"] = $this->dejavnost_model->spreminjanjeDejavnosti($id);
-        $dejavnost["dijaki"][0]["idDejavnost"] = $id;
-
-        $dejavnost["dijaki"][0]["mozniOddelki"] = explode(";",  $dejavnost["dijaki"][0]["mozniOddelki"]);
-        $key = array_search("", $dejavnost["dijaki"][0]["mozniOddelki"]);
-        unset($dejavnost["dijaki"][0]["mozniOddelki"][$key]);
-        $dejavnost["sezDijakov"] = $this->dejavnost_model->mozniDijaki($dejavnost["dijaki"][0]["mozniOddelki"], $id);
-
-        if($this->session->userdata("vloga") == "admin"){
-            $this->load->view("dejavnost/rocnaPrijavaDijakiAdmin", $dejavnost);
+            $dejavnost["dijaki"] = $this->dejavnost_model->spreminjanjeDejavnosti($id);
+            $dejavnost["dijaki"][0]["idDejavnost"] = $id;
+    
+            $dejavnost["dijaki"][0]["mozniOddelki"] = explode(";",  $dejavnost["dijaki"][0]["mozniOddelki"]);
+            $key = array_search("", $dejavnost["dijaki"][0]["mozniOddelki"]);
+            unset($dejavnost["dijaki"][0]["mozniOddelki"][$key]);
+            $dejavnost["sezDijakov"] = $this->dejavnost_model->mozniDijaki($dejavnost["dijaki"][0]["mozniOddelki"], $id);
+    
+            if($this->session->userdata("vloga") == "admin"){
+                $this->load->view("dejavnost/rocnaPrijavaDijakiAdmin", $dejavnost);
+            }
+            elseif($this->session->userdata("vloga") == "profesor"){
+                $this->load->view("dejavnost/rocnaPrijavaDijakiProfesor", $dejavnost);
+            }   
         }
-        elseif($this->session->userdata("vloga") == "profesor"){
-            $this->load->view("dejavnost/rocnaPrijavaDijakiProfesor", $dejavnost);
-        }    
+ 
 
 
 
@@ -1012,51 +1031,54 @@ class Dejavnost extends CI_Controller{
         if($this->session->userdata("vloga") != "admin" and $this->session->userdata("vloga") != "profesor"){
             redirect("");
         }
-        $izbor = $this->input->post("txt_dijaki[]");
-        $id = $this->input->post("gumb");
-
-        $st=0;
-        $uspeh = 1;
-        foreach($izbor as $idDijak){
-            $prosnja[$st] = array(
-                "Oseba_idOseba" => $idDijak,
-                "Dejavnost_idDejavnost" => $id,
-                "avtor" => 0,
-                "odobreno" => 1
-            );
-
-
-            $this->dejavnost_model->izbrisiProsnjoCeObstaja($prosnja[$st]);
-            $st++;
-        }
-
-        $stMest = $this->dejavnost_model->avtomatskaPrijavaPridobiMoznaMesta($id);
-        if($stMest < $st){
-            $uspeh = 0;
-        }
-
-        if($uspeh == 1){
-
-            foreach($prosnja as $x){
-
-            $this->dejavnost_model->prosnjaZaPrijavoPotrjeno($x, $id);
-
-            $this->dejavnost_model->potrditevUstvariPrisotnost($x["Dejavnost_idDejavnost"],$x["Oseba_idOseba"]);
-
-            }
-
-            
-            $this->session->set_flashdata("succes", "Dijaki so bili uspešno prijavljeni");
-        
-            redirect("dejavnost/dodajanjeDijakov");
-
-        }
         else{
-
-            $this->session->set_flashdata("error", "Dejavnost ima premalo mest!");
+            $izbor = $this->input->post("txt_dijaki[]");
+            $id = $this->input->post("gumb");
     
-            redirect("dejavnost/dodajanjeDijakov");
+            $st=0;
+            $uspeh = 1;
+            foreach($izbor as $idDijak){
+                $prosnja[$st] = array(
+                    "Oseba_idOseba" => $idDijak,
+                    "Dejavnost_idDejavnost" => $id,
+                    "avtor" => 0,
+                    "odobreno" => 1
+                );
+    
+    
+                $this->dejavnost_model->izbrisiProsnjoCeObstaja($prosnja[$st]);
+                $st++;
+            }
+    
+            $stMest = $this->dejavnost_model->avtomatskaPrijavaPridobiMoznaMesta($id);
+            if($stMest < $st){
+                $uspeh = 0;
+            }
+    
+            if($uspeh == 1){
+    
+                foreach($prosnja as $x){
+    
+                $this->dejavnost_model->prosnjaZaPrijavoPotrjeno($x, $id);
+    
+                $this->dejavnost_model->potrditevUstvariPrisotnost($x["Dejavnost_idDejavnost"],$x["Oseba_idOseba"]);
+    
+                }
+    
+                
+                $this->session->set_flashdata("succes", "Dijaki so bili uspešno prijavljeni");
+            
+                redirect("dejavnost/dodajanjeDijakov");
+    
+            }
+            else{
+    
+                $this->session->set_flashdata("error", "Dejavnost ima premalo mest!");
+        
+                redirect("dejavnost/dodajanjeDijakov");
+            }
         }
+
 
 
     }
@@ -1075,19 +1097,26 @@ class Dejavnost extends CI_Controller{
             unset($oddelki[count($oddelki)-1]);
             $dijakiKiUstrezajoPrijavi = $this->dejavnost_model->avtomatskaPrijavaPridobiDijake($oddelki, $moznaMesta);
             #print_r($dijakiKiUstrezajoPrijavi);
-            foreach($dijakiKiUstrezajoPrijavi as $dijak){
-                $relacija = array(
-                    "Oseba_idOseba" => $dijak["idOseba"],
-                    "Dejavnost_idDejavnost" => $id,
-                    "avtor" => 0,
-                    "odobreno" => 1
-                );
-                $this->dejavnost_model->avtomatskaPrijavaUstvariRelacijo($id, $relacija);
-
-                $this->dejavnost_model->potrditevUstvariPrisotnost($relacija["Dejavnost_idDejavnost"],$relacija["Oseba_idOseba"]);
+            if($dijakiKiUstrezajoPrijavi == null){
+                $this->session->set_flashdata("succes", "Vis dijaki so že prijavljeni");
+                redirect("dejavnost/dodajanjeDijakov");
             }
-            $this->session->set_flashdata("succes", "Dijaki so bili uspešno prijavljeni");
-            redirect("dejavnost/dodajanjeDijakov");
+            else{
+                foreach($dijakiKiUstrezajoPrijavi as $dijak){
+                    $relacija = array(
+                        "Oseba_idOseba" => $dijak["idOseba"],
+                        "Dejavnost_idDejavnost" => $id,
+                        "avtor" => 0,
+                        "odobreno" => 1
+                    );
+                    $this->dejavnost_model->avtomatskaPrijavaUstvariRelacijo($id, $relacija);
+    
+                    $this->dejavnost_model->potrditevUstvariPrisotnost($relacija["Dejavnost_idDejavnost"],$relacija["Oseba_idOseba"]);
+                }
+                $this->session->set_flashdata("succes", "Dijaki so bili uspešno prijavljeni");
+                redirect("dejavnost/dodajanjeDijakov");
+            }
+
         }
 
     }
@@ -1097,7 +1126,8 @@ class Dejavnost extends CI_Controller{
             redirect("");
         }
         else{
-        $prosnjeUcencev["prosnje"] = $this->dejavnost_model->pridobiProsnjeDejavnostProfesor($this->session->userdata("idOseba"));
+        $id = $this->input->post("gumb");
+        $prosnjeUcencev["prosnje"] = $this->dejavnost_model->pridobiProsnjeDejavnostProfesor($this->session->userdata("idOseba"), $id);
         if($prosnjeUcencev["prosnje"] != NULL){
             for($x=0; $x<sizeof($prosnjeUcencev["prosnje"]); $x++){
                 $sez[$x] = $prosnjeUcencev["prosnje"][$x]["Dejavnost_idDejavnost"]; 
@@ -1164,7 +1194,8 @@ class Dejavnost extends CI_Controller{
             redirect("");
         }
         else{
-            $prosnjeUcencev["prosnje"] = $this->dejavnost_model->pridobiProsnjeDejavnost($this->session->userdata("idOseba"));
+            $id = $this->input->post("gumb");
+            $prosnjeUcencev["prosnje"] = $this->dejavnost_model->pridobiProsnjeDejavnost($this->session->userdata("idOseba"), $id);
 
             if($prosnjeUcencev["prosnje"] != NULL){
                 for($x=0; $x<sizeof($prosnjeUcencev["prosnje"]); $x++){
@@ -1224,6 +1255,11 @@ class Dejavnost extends CI_Controller{
             $this->db->where("Dejavnost_idDejavnost", $id[0]);
             $this->db->where("Oseba_idOseba", $id[1]);
             $this->db->update("oseba_has_dejavnost");
+
+            $this->db->set("casVnosa", "NOW()", FALSE);
+            $this->db->where("Dejavnost_idDejavnost", $id[0]);
+            $this->db->where("Oseba_idOseba", $id[1]);
+            $this->db->update("oseba_has_dejavnost");
     
             $this->db->set("moznaMesta", "moznaMesta-1", FALSE);
             $this->db->where("idDejavnost", $id[0]);
@@ -1255,6 +1291,11 @@ class Dejavnost extends CI_Controller{
             $this->db->where("Dejavnost_idDejavnost", $id[0]);
             $this->db->where("Oseba_idOseba", $id[1]);
             $this->db->update("oseba_has_dejavnost");
+
+            $this->db->set("casVnosa", "NOW()", FALSE);
+            $this->db->where("Dejavnost_idDejavnost", $id[0]);
+            $this->db->where("Oseba_idOseba", $id[1]);
+            $this->db->update("oseba_has_dejavnost");
         
             $this->session->set_flashdata("succes", "Prijava je bila zavrnjena!");
     
@@ -1264,9 +1305,63 @@ class Dejavnost extends CI_Controller{
     }
 
     public function prikaziPrijavljene(){
-        $id = $this->input->post("gumb");
-        $udelezenci["udelezenci"] = $this->dejavnost_model->pridobiUdelezence($id);
-        $this->load->view("dejavnost/udelezenci", $udelezenci);
+        if($this->session->userdata("vloga") != "admin" and $this->session->userdata("vloga") != "profesor"){
+            redirect("");
+        }
+        else{
+            $id = $this->input->post("gumb");
+            $udelezenci["udelezenci"] = $this->dejavnost_model->pridobiUdelezence($id);
+            $this->load->view("dejavnost/udelezenci", $udelezenci);
+        }
+
+    }
+
+    public function beleziPrisotnost(){
+        if($this->session->userdata("vloga") != "admin" and $this->session->userdata("vloga") != "profesor"){
+            redirect("");
+        }
+        else{
+            if($this->session->userdata("prisotnost") != NULL){
+            
+                $id = $this->session->userdata("prisotnost");
+                $udelezenci["udelezenci"] = $this->dejavnost_model->pridobiPrisotnost($id);
+                $this->load->view("dejavnost/beleziPrisotnost", $udelezenci);
+        
+            }
+            else{
+                $id = $this->input->post("gumb");
+                $udelezenci["udelezenci"] = $this->dejavnost_model->pridobiPrisotnost($id);
+                $this->load->view("dejavnost/beleziPrisotnost", $udelezenci);
+            }
+        }
+
+
+    }
+
+    public function beleziPrisotnost_submit(){
+        if($this->session->userdata("vloga") != "admin" and $this->session->userdata("vloga") != "profesor"){
+            redirect("");
+        }
+        else{
+            $date = new DateTime("now");
+            $curr_date = $date->format('Y-m-d ');
+    
+            $id = $this->input->post("gumb");
+            $id = explode(";", $id);
+
+            $bool = $this->input->post("txt_prisoten");
+    
+            $this->db->set("prisoten", $bool);
+            $this->db->where("idDejavnost", $id[0]);
+            $this->db->where("idOseba", $id[1]);
+            $this->db->where("datum", $curr_date);
+            $this->db->update("prisotnost");
+    
+            $this->session->set_flashdata("succes", "Prisotnost je bil shranjena");
+            
+            redirect("dejavnost/beleziPrisotnost");
+        }
+
     }
 
 

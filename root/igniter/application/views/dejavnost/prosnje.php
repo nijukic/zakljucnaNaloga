@@ -51,11 +51,6 @@
                 </nav>
                 <div id="mySidenav" class="sidenav">
                     <br>
-                    <?php echo "<a class=logout href=". site_url() . "/prijava/izpis" . ">Odjava</a>" ?>  
-                    
-                </nav>
-                <div id="mySidenav" class="sidenav">
-                    <br>
                     <?php $this->load->view("meniProfesor"); ?>
                 </div>
 
@@ -68,7 +63,7 @@
                             <?php    
 
                                 if($prosnje == null){
-                                    echo "<h1>Ni prošenj za odobriti</h1>";
+                                    echo "<h1>Ni prošenj za odobriti.</h1>";
                                 }   
                                 foreach($prosnje as $opcija){
 
@@ -76,7 +71,7 @@
 
                                     echo "<h1>" . $opcija["naziv"] . "</h1>" . "<br>";
 
-                                    echo "<p>"  . $opcija["opis"] . "</p>";
+                                    echo "<p>Opis: "  . $opcija["opis"] . "</p>";
 
                                     echo "<p>" . "Ime in priimek učenca: " . $opcija["ime"] . " " . $opcija["priimek"] .  "</p>"; 
 

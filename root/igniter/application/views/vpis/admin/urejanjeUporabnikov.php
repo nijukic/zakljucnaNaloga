@@ -72,7 +72,7 @@
                     <div class="row">
                         <?php
                         if($uporabniki == null){
-                            echo "<br><h3>V bazi ni uporabnikov, ki ustrezajo tem pogojem!</h3>";
+                            echo "<br><h3>Ni zadetkov.</h3>";
                         }
                         foreach($uporabniki as $uporabnik){
                             if($uporabnik["vloga"] != "admin"){

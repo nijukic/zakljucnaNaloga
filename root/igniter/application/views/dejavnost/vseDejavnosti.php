@@ -69,15 +69,15 @@
 
                                     echo "<p>Mentor: " . $opcija["ime"] . " " . $opcija["priimek"] . "</p>" . "<br>";
 
-                                    echo "<p>" . $opcija["opis"] . "</p>";
+                                    echo "<p>Opis: " . $opcija["opis"] . "</p>";
 
-                                    echo "<p>" . "Mozna Mesta: " . $opcija["moznaMesta"] . "</p>";
+                                    echo "<p>" . "Možna Mesta: " . $opcija["moznaMesta"] . "</p>";
 
                                     if($opcija["malica"] == 1){
-                                        echo "<p>" . "Malica: " . "Malica je" . "</p>";
+                                        echo "<p>" . "Malica: " . "DA" . "</p>";
                                     }
                                     else{
-                                        echo "<p>" . "Malica: " . "Malice ni" . "</p>";
+                                        echo "<p>" . "Malica: " . "NE" . "</p>";
                                     }
 
 
@@ -98,13 +98,13 @@
 
                                                         if($opcija3["nazivPrograma"] == $vrednost2){
 
-                                                            echo $opcija3["stevilka"] . "." . $opcija3["crka"] . "<br>";
+                                                            echo $opcija3["stevilka"] . "." . $opcija3["crka"] . ", ";
 
                                                         }
                                                         else{
-                                                            echo $opcija3["nazivPrograma"] . "<br>";
+                                                            echo "<br>" . $opcija3["nazivPrograma"] . "<br>";
 
-                                                            echo $opcija3["stevilka"] . "." . $opcija3["crka"] . "<br>";
+                                                            echo $opcija3["stevilka"] . "." . $opcija3["crka"] . ", ";
                                                         }
 
                                                     }
@@ -113,15 +113,15 @@
 
                                                         echo $opcija3["nazivPrograma"] . "<br>";
 
-                                                        echo $opcija3["stevilka"] . "." . $opcija3["crka"] . "<br>";
+                                                        echo $opcija3["stevilka"] . "." . $opcija3["crka"] . ", ";
                                                     }
                                                 }
                                                 else{
-                                                    echo $opcija3["nazivSole"] . "<br>";
+                                                    echo "<br>" .  "<br>" . $opcija3["nazivSole"] . "<br>";
 
                                                     echo $opcija3["nazivPrograma"] . "<br>";
 
-                                                    echo $opcija3["stevilka"] . "." . $opcija3["crka"] . "<br>";
+                                                    echo $opcija3["stevilka"] . "." . $opcija3["crka"] . ", ";
                                                 }
                                                 $vrednost2 = $opcija3["nazivPrograma"];
                                                 $vrednost = $opcija3["nazivSole"];
@@ -133,23 +133,45 @@
 
                                     }
 
+                                    echo "<br><br>";
+
+                                    echo form_open("dejavnost/prosnjeDijakovAdmin");
+                                    echo "<button type='submit'  name='gumb' id='gumb' class='btn btn-dark' value=" . $opcija["idDejavnost"]  . ">Potrdi prijave</button>";
+                                    echo form_close();
+
+                                    echo "<br>";
+
+                                    echo form_open("dejavnost/izbrisPrijave");
+                                    echo "<button type='submit'  name='gumb' id='gumb' class='btn btn-dark' value=" . $opcija["idDejavnost"]  . ">Izbriši prijave</button>";
+                                    echo form_close();
+
+                                    echo "<br>";
+
+                                    echo form_open("dejavnost/beleziPrisotnost");
+                                    echo "<button type='submit'  name='gumb' id='gumb' class='btn btn-dark' value=" . $opcija["idDejavnost"]  . ">Prisotnost</button>";
+                                    echo form_close();
                                     
-                                    echo "<br><br>".form_open("dejavnost/brisanjeDejavnosti");
-                                    echo "<button type='submit'  name='gumb' id='gumb' class='btn btn-dark' value=" . $opcija["idDejavnost"]  . ">Izbriši dejavnost</button>";
+                                    echo "<br>";
+
+                                    echo form_open("dejavnost/prikaziPrijavljene");
+                                    echo "<button type='submit'  name='gumb' id='gumb' class='btn btn-dark' value=" . $opcija["idDejavnost"]  . ">Udeleženci</button>";
                                     echo form_close(); 
 
                                     echo "<br>";
 
                                     echo form_open("dejavnost/spreminjanjeDejavnosti");
                                     echo "<button type='submit'  name='gumb' id='gumb' class='btn btn-dark' value=" . $opcija["idDejavnost"]  . ">Spremeni dejavnost</button>";
-                                    echo form_close(); 
+                                    echo form_close();
 
                                     echo "<br>";
 
-                                    echo form_open("dejavnost/prikaziPrijavljene");
-                                    echo "<button type='submit'  name='gumb' id='gumb' class='btn btn-dark' value=" . $opcija["idDejavnost"]  . ">Udeleženci</button>";
+                                    echo form_open("dejavnost/brisanjeDejavnosti");
+                                    echo "<button type='submit'  name='gumb' id='gumb' class='btn btn-dark' value=" . $opcija["idDejavnost"]  . ">Izbriši dejavnost</button>";
                                     echo form_close(); 
-                                    echo "</div>";
+
+                                    echo "<br>";
+                                    echo "</div>"; 
+
                             ?>
                                 <br>
 

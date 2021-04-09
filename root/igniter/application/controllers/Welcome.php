@@ -13,6 +13,7 @@ class Welcome extends CI_Controller {
 	{
 		if($this->session->userdata("vloga") == "profesor"){
 			$this->session->unset_userdata('spreminjanje');
+			$this->session->unset_userdata('prisotnost');
 			$obvestila["obvestila"] = $this->dejavnost_model->domovProfesor($this->session->userdata("idOseba"));
 			$this->load->view("vpis/profesor/prijavljen", $obvestila);
 		}
@@ -22,6 +23,7 @@ class Welcome extends CI_Controller {
 		}
 		else if($this->session->userdata("vloga") == "admin"){
 			$this->session->unset_userdata('spreminjanje');
+			$this->session->unset_userdata('prisotnost');
 			$obvestila["obvestila"] = $this->dejavnost_model->domovAdmin();
 			$this->load->view("vpis/admin/prijavljen", $obvestila);
 		}

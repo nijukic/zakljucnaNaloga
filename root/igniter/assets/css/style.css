@@ -15,7 +15,30 @@ body::after{
     position: absolute;
     z-index: -1;   
 }
-
+.prijavaOdobrena{
+    background-color: #C1FFA2;
+    margin: 20px;
+    padding: 20px;
+    color: black;
+}
+.prijavaZavrnjena{
+    background-color: #EB877E;
+    margin: 20px;
+    padding: 20px;
+    color: black;
+}
+.prijavaPoslana{
+    background-color: #EBE78B;
+    margin: 20px;
+    padding: 20px;
+    color: black;
+}
+.dejavnostUstvarjena{
+    background-color: #A3EBE2;
+    margin: 20px;
+    padding: 20px;
+    color: black;
+}
 .sidenav {
     height: 100%; 
     width: 0;
@@ -40,6 +63,7 @@ body::after{
     display: block;
     transition: 0.3s;
 }
+
 .container h1,h2,h3,h4{
     font-family: 'Poiret One', cursive;
     font-weight: bold;

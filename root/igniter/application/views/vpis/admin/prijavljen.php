@@ -48,32 +48,30 @@
                         else{                        
                         foreach($obvestila as $obvestilo){
                             echo "<div class='col-12 col-md-6 col-lg-4 vsebina'>";
-                                echo "<div class='cellContent border'>";
                                     if($obvestilo["odobreno"] == 1){
-                                        echo "<div class='prijavaOdobrena' style='background-color:90be6d;'>";
-                                            echo "Prijava na dejavnost: " . $obvestilo["naziv"] . " - odobrena, " . $obvestilo["casVnosa"] . "<br>" . 
+                                        echo "<div class='prijavaOdobrena'>";
+                                            echo "Prijava na dejavnost: " . $obvestilo["naziv"] . " - odobrena, " .  "<br>" . $obvestilo["casVnosa"] . "<br>" . 
                                             $obvestilo["ime"] . " " .  $obvestilo["priimek"];
                                         echo "</div>";
                                     }
                                     elseif($obvestilo["odobreno"] == 2){
-                                        echo "<div class='prijavaZavrnjena' style='background-color:e5383b;'>";
-                                            echo "Prijava na dejavnost:  " . $obvestilo["naziv"] . " - zavrnjena, " . $obvestilo["casVnosa"] . "<br>" . 
+                                        echo "<div class='prijavaZavrnjena'>";
+                                            echo "Prijava na dejavnost:  " .  "<br>" . $obvestilo["naziv"] . " - zavrnjena, " .  "<br>" . $obvestilo["casVnosa"] . "<br>" . 
                                             $obvestilo["ime"] . " " .  $obvestilo["priimek"];
                                         echo "</div>";
                                     }
                                     elseif($obvestilo["odobreno"] == 0 and isset($obvestilo["odobreno"]) == true){
-                                        echo "<div class='prijavaPoslana' style='background-color:fee440;'>";
-                                            echo "Prijava na dejavnost:  " . $obvestilo["naziv"] . " - čaka na odobritev, " . $obvestilo["casVnosa"] . "<br>" . 
+                                        echo "<div class='prijavaPoslana'>";
+                                            echo "Prijava na dejavnost:  " .  "<br>" . $obvestilo["naziv"] . " - čaka na odobritev, " .  "<br>" . $obvestilo["casVnosa"] . "<br>" . 
                                             $obvestilo["ime"] . " " .  $obvestilo["priimek"];
                                         echo "</div>";
                                     }
                                     else{
-                                      echo "<div class='dejavnostUstvarjena' style='background-color:fee440;'>";
-                                          echo "Prijava na dejavnost:  " . $obvestilo["naziv"] . " - dejavnost ustvarjena, " . $obvestilo["casVnosa"] . "<br>" . 
+                                      echo "<div class='dejavnostUstvarjena'>";
+                                          echo $obvestilo["naziv"] . " - dejavnost ustvarjena, " .  "<br>" . $obvestilo["casVnosa"] . "<br>" . 
                                           $obvestilo["ime"] . " " .  $obvestilo["priimek"];
                                       echo "</div>";
                                   }
-                                echo "</div>";
                             echo "</div>";
                         }
                     }

@@ -63,7 +63,7 @@
                             <?php    
 
                                 if($prosnje == null){
-                                    echo "<h1>Ni prošenj za odobriti</h1>";
+                                    echo "<h1>Ni prošenj za odobriti.</h1>";
                                 }   
                                 foreach($prosnje as $opcija){
 
@@ -71,7 +71,7 @@
 
                                     echo "<h1>" . $opcija["naziv"] . "</h1>" . "<br>";
 
-                                    echo "<p>"  . $opcija["opis"] . "</p>";
+                                    echo "<p>Opis: "  . $opcija["opis"] . "</p>";
 
                                     echo "<p>" . "Ime in priimek učenca: " . $opcija["ime"] . " " . $opcija["priimek"] .  "</p>"; 
 
