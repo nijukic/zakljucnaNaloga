@@ -599,7 +599,7 @@ class Dejavnost extends CI_Controller{
                 array(
                     "field"=>"txt_naziv",
                     "label"=>"Naziv dejavnosti",
-                    "rules"=>"required|is_unique[dejavnost.naziv]"
+                    "rules"=>"required"
                 ),
                 array(
                     "field"=>"txt_mesta",
@@ -1098,7 +1098,7 @@ class Dejavnost extends CI_Controller{
             $dijakiKiUstrezajoPrijavi = $this->dejavnost_model->avtomatskaPrijavaPridobiDijake($oddelki, $moznaMesta);
             #print_r($dijakiKiUstrezajoPrijavi);
             if($dijakiKiUstrezajoPrijavi == null){
-                $this->session->set_flashdata("succes", "Vis dijaki so že prijavljeni");
+                $this->session->set_flashdata("succes", "Vsi dijaki so že prijavljeni");
                 redirect("dejavnost/dodajanjeDijakov");
             }
             else{
@@ -1363,8 +1363,66 @@ class Dejavnost extends CI_Controller{
         }
 
     }
+    public function isciDejavnost($niz){
+        $this->db->select("idOseba, ime, priimek, vloga, eNaslov, spol");
+        $this->db->from("oseba");
+        $this->db->like("ime", $niz);
+        $this->db->or_like("priimek", $niz);
+        $this->db->or_like("vloga", $niz);
+        $this->db->order_by("vloga", "DESC");
+        $this->db->order_by("priimek", "ASC");
+        $query = $this->db->get();
+        return $rezultat = $query->result_array();
+    }
 
+    public function iskanjeDejavnosti(){
+        if($this->session->userdata("vloga") != "admin" and $this->session->userdata("vloga") != "profesor"){
+            redirect("");
+        }
+        else{           
+            $iskalniNiz = $this->input->post("txt_iskalniNiz");
+            if($this->session->userdata("vloga") == "admin"){
+                $dejavnosti["izbire"] = $this->dejavnost_model->isciDejavnostiAdmin($iskalniNiz);
+                $this->load->view("dejavnost/vseDejavnosti", $dejavnosti);                
+            }
+            elseif($this->session->userdata("vloga") == "profesor"){
+                $dejavnosti["izbire"] = $this->dejavnost_model->isciDejavnostiProfesor($iskalniNiz, $this->session->userdata("idOseba"));
+                $this->load->view("dejavnost/moje", $dejavnosti); 
+            }
+            $this->load->view("footer");
+        }
+    }
 
+    public function iskanjeRelacij(){
+        if($this->session->userdata("vloga") != "admin" and $this->session->userdata("vloga") != "profesor"){
+            redirect("");
+        }
+        else{           
+            echo $iskalniNiz = $this->input->post("txt_iskalniNiz");
+            if($iskalniNiz == "odobreno"){
+                $iskalniNiz = 1;
+            }
+            elseif($iskalniNiz == "zavrnjeno"){
+                $iskalniNiz = 2;
+            }
+            elseif($iskalniNiz == "ustvarjeno"){
+                $iskalniNiz = null;
+            }
+            elseif($iskalniNiz == "prošnja"){
+                $iskalniNiz = 0;
+            }
+            echo $iskalniNiz;
+            if($this->session->userdata("vloga") == "admin"){
+                $obvestila["obvestila"] = $this->dejavnost_model->isciRelacijeAdmin($iskalniNiz);
+                $this->load->view("vpis/admin/prijavljen", $obvestila);                
+            }
+            elseif($this->session->userdata("vloga") == "profesor"){
+                $obvestila["obvestila"] = $this->dejavnost_model->isciRelacijeProfesor($iskalniNiz, $this->session->userdata("idOseba"));
+                $this->load->view("vpis/profesor/prijavljen", $obvestila); 
+            }
+            $this->load->view("footer");
+        }
+    }
     
 
 }

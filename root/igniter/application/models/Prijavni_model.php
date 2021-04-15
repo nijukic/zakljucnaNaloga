@@ -124,6 +124,5 @@ class Prijavni_model extends CI_Model{
         $query = $this->db->get();
         return $rezultat = $query->result_array();
     }
-    
 
 }

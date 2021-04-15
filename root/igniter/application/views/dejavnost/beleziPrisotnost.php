@@ -25,33 +25,6 @@
             
                 <div class="wrapper">
 
-               <nav class="navbar navigacija sticky-top">
-                    
-                    <a href="#" class="link" onclick="openNav()">
-                      <svg class="settings-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-                       <g class="settings-icon__group settings-icon__group--1">
-                         <line class="settings-icon__line" x1="80" y1="15" x2="80" y2="85"/>
-                         <rect class="settings-icon__rect" x="75" y="25" width="15" height="15"/>
-                        </g>
-                       <g class="settings-icon__group settings-icon__group--2">
-                         <line class="settings-icon__line" x1="50" y1="15" x2="50" y2="85"/>
-                         <rect class="settings-icon__rect" x="42" y="60" width="15" height="15"/>
-                       </g>
-                       <g class="settings-icon__group settings-icon__group--3">
-                         <line class="settings-icon__line" x1="20" y1="15" x2="20" y2="85"/>
-                         <rect class="settings-icon__rect" x="13" y="35" width="15" height="15"/>
-                       </g>
-                      </svg>
-                     </a>
-                    
-                    <h1 class="welcome">Prijavljeni ste kot <?php  echo $this->session->userdata("ime")?>
-
-                    </h1>
-                    <?php echo "<a class=logout href=". site_url() . "/prijava/izpis" . ">Odjava</a>" ?>  
-                    
-                </nav>
-                <div id="mySidenav" class="sidenav">
-                    <br>
                     <?php 
                     if($this->session->userdata("vloga") == "admin"){
                         $this->load->view("meniAdmin"); 
@@ -60,39 +33,67 @@
                         $this->load->view("meniProfesor"); 
                     }
                     ?>
-                </div>
-
                     
                     <div class="container-fluid">
                         <div class="row">
+                            
+                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
+                              Launch demo modal
+                            </button>
+                            
                             <?php
                                 if($udelezenci == null){
                                     echo "<h1>Ta dejavnost ni danes na urniku.</h1>";
                                 }
-                                else{
+                                else{ ?>
+                            
+                            <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                              <div class="modal-dialog modal-dialog-centered" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLongTitle">Vsi ucenci</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                <div class="modal-body">
+                                    <table class="table">
+                            
+                            <?php        
                                     $this->session->set_userdata("prisotnost", $udelezenci[0]["idDejavnost"]);
                                     $sez = array();      
                                     foreach($udelezenci as $udelezenec){
                                         if(in_array($udelezenec["idOseba"], $sez) == false){
                                             array_push($sez, $udelezenec["idOseba"]);
-                                            echo "<div class='col-12 col-sm-5 col-md-3 col-lg-3 col-xl-2 cellContent border'>";
+                                            //echo "<div class='col-12 col-sm-5 col-md-3 col-lg-3 col-xl-2 cellContent border'>";
                                             echo form_open("dejavnost/beleziPrisotnost_submit");
                                             foreach($udelezenci as $primerjavaID){
     
                                                 if($udelezenec["idOseba"] == $primerjavaID["idOseba"]){
-                                                        echo $primerjavaID["naziv"];
-                                                        echo "<br>"  . $udelezenec["ime"] . " " . $udelezenec["priimek"]; 
-                                                        echo "<br>"  . $primerjavaID["datum"] .  "<br>"; 
+                                                        //echo $primerjavaID["naziv"];
+                                                        //echo "<br>"  . $udelezenec["ime"] . " " . $udelezenec["priimek"]; 
+                                                        //echo "<br>"  . $primerjavaID["datum"] .  "<br>"; 
                                                         ?>
-                                                        
-                                                        <input type="radio" class="form-check-input" id="txt_prisoten" name="txt_prisoten" value="1" <?php if($primerjavaID["prisoten"] == 1){
-                                                            echo "checked='checked'";
-                                                        } ?>>
-                                                        <label for="Da">Da</label><br>
-                                                        <input type="radio" class="form-check-input" id="txt_prisoten" name="txt_prisoten" value="0" <?php if($primerjavaID["prisoten"] == 0){
-                                                            echo "checked='checked'";
-                                                        } ?>>
-                                                        <label for="Ne">Ne</label><br>
+                                                            
+                                                        <tbody>
+                                                            <tr>
+                                                                <th scope="row"><?php echo $primerjavaID["naziv"]; ?></th>
+                                                                <td><?php echo "<br>"  . $udelezenec["ime"] . " " . $udelezenec["priimek"]; ?></td>
+                                                                <td><?php echo "<br>"  . $primerjavaID["datum"] .  "<br>"; ?></td>
+                                                                <td><input type="radio" class="form-check-input" id="txt_prisoten" name="txt_prisoten" value="1" <?php if($primerjavaID["prisoten"] == 1){
+                                                                    echo "checked='checked'";
+                                                                } ?>>
+                                                                <label for="Da">Da</label><br></td>
+                                                                <td><input type="radio" class="form-check-input" id="txt_prisoten" name="txt_prisoten" value="0" <?php if($primerjavaID["prisoten"] == 0){
+                                                                    echo "checked='checked'";
+                                                                } ?>>
+                                                                <label for="Ne">Ne</label><br></td>
+                                                                <td><?php $seznam = $udelezenec["idDejavnost"] . ";" . $udelezenec["idOseba"];
+                                                                    echo "<button type='submit'  name='gumb' id='gumb' class='btn btn-dark' value=" . $seznam  . ">" . "Shrani</button>";
+                                                                    echo form_close();
+                                                                    echo "</div>"; ?></td>
+                                                            </tr>
+                                                        </tbody>
                 
                                                         <?php  
                                                     
@@ -101,10 +102,7 @@
  
             
                                             }
-                                                $seznam = $udelezenec["idDejavnost"] . ";" . $udelezenec["idOseba"];
-                                                echo "<button type='submit'  name='gumb' id='gumb' class='btn btn-dark' value=" . $seznam  . ">" . "Shrani</button>";
-                                                echo form_close();
-                                                echo "</div>";
+                                
                                     }
 
 
@@ -112,6 +110,18 @@
     
                                     }
                                     
+                                ?>      
+                                        </table>    
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                            <button type="button" class="btn btn-primary">Save changes</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>        
+                                    
+                                <?php    
                                 }
 
                             ?>

@@ -417,7 +417,7 @@ class Prijava extends CI_Controller{
             $this->load->view("footer");
         }
     }
-
+    
     public function spremeniGeslo(){
         if($this->session->userdata("vloga") != "admin"){
             redirect("");

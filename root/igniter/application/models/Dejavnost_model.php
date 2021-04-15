@@ -594,10 +594,76 @@ public function pridobiMentorja($idDejavnost){
     return $rezultat = $query->result_array(); 
 }
 
+    public function isciDejavnostiAdmin($niz){
+        $this->db->select("dejavnost.*, ime, priimek");
+        $this->db->from("oseba");
+        $this->db->join("oseba_has_dejavnost", "idOseba=Oseba_idOseba");
+        $this->db->join("dejavnost", "Dejavnost_idDejavnost=idDejavnost");
+        $this->db->like("ime", $niz);
+        $this->db->or_like("priimek", $niz);
+        $this->db->or_like("naziv", $niz);
+        $this->db->order_by('casVnosa', 'DESC');
+        $query = $this->db->get();
+        return $rezultat = $query->result_array(); 
+    }
+    public function isciDejavnostiProfesor($niz, $idOseba){
+        $this->db->select("dejavnost.*, ime, priimek");
+        $this->db->from("oseba");
+        $this->db->join("oseba_has_dejavnost", "idOseba=Oseba_idOseba");
+        $this->db->join("dejavnost", "Dejavnost_idDejavnost=idDejavnost");
+        $this->db->where("idOseba", $idOseba);
+        $this->db->like("naziv", $niz);
+        $this->db->order_by('casVnosa', 'DESC');
+        $query = $this->db->get();
+        return $rezultat = $query->result_array(); 
+    }
 
+    public function isciRelacijeProfesor($niz, $idOseba){
+        $this->db->distinct();
+        $this->db->select('Dejavnost_idDejavnost');
+        $this->db->from('oseba_has_dejavnost');
+        $this->db->where("Oseba_idOseba", $idOseba);
+        $this->db->where("avtor", 1);
+        
+        $where_clause = $this->db->get_compiled_select();
+    
+    
+        $this->db->select("odobreno, naziv, casVnosa, ime, priimek");
+        $this->db->from("oseba");
+        $this->db->join("oseba_has_dejavnost", "idOseba=Oseba_idOseba");
+        $this->db->join("dejavnost", "Dejavnost_idDejavnost=idDejavnost");
+        $this->db->group_start();
+            $this->db->where("`Dejavnost_idDejavnost` IN ($where_clause)", NULL, FALSE);
+            $this->db->group_start();
+                $this->db->like("ime", $niz);
+                $this->db->or_like("priimek", $niz);
+                $this->db->or_like("naziv", $niz);
+                $this->db->or_like("odobreno", $niz);
+            $this->db->group_end();
+        $this->db->group_end();
+        $this->db->order_by('casVnosa', 'DESC');
+        $query = $this->db->get();
+        return $rezultat = $query->result_array();
 
+        $this->db->group_start();  //group start
+        $this->db->like('sender',$k);
+        $this->db->or_like('msg',$k); 
+        $this->db->group_end();  //group ed
+    }
 
-
+    public function isciRelacijeAdmin($niz){
+        $this->db->select("odobreno, naziv, ime, priimek, vloga");
+        $this->db->from("oseba");
+        $this->db->join("oseba_has_dejavnost", "idOseba=Oseba_idOseba");
+        $this->db->join("dejavnost", "Dejavnost_idDejavnost=idDejavnost");
+        $this->db->like("ime", $niz);
+        $this->db->or_like("priimek", $niz);
+        $this->db->or_like("naziv", $niz);
+        $this->db->order_by('casVnosa', 'DESC');
+        $this->db->limit("50");
+        $query = $this->db->get();
+        return $rezultat = $query->result_array(); 
+    }
 
 
 

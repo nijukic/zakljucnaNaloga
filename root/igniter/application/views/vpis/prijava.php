@@ -25,9 +25,12 @@
             <div class="wrapper">
 
                 <nav class="navbar navigacija sticky-top">
-                        
-                        <h1 class="welcome" style="align-content: center;">Prijava</h1>
-     
+                    
+                    <div class="container">
+                        <h1 class="welcome" >Prijava</h1>
+                        <img class="logotip" src=/igniter/assets/img/aaa.png>
+                    </div>   
+                    
                 </nav>
                     
                 <div class="container">
@@ -47,8 +50,11 @@
                     <button type="submit" class="btn btn-dark">Prijava</button>
                   <?php echo form_close() ?> 
                     
+                   
+                    
                 </div>
-
+                    
+                
             </div>
             
         </main>

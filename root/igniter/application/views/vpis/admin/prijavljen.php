@@ -8,46 +8,70 @@
             
                 <div class="wrapper">
 
-                <nav class="navbar navigacija sticky-top">
-                    
-                    <a href="#" class="link" onclick="openNav()">
-                      <svg class="settings-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-                       <g class="settings-icon__group settings-icon__group--1">
-                         <line class="settings-icon__line" x1="80" y1="15" x2="80" y2="85"/>
-                         <rect class="settings-icon__rect" x="75" y="25" width="15" height="15"/>
-                        </g>
-                       <g class="settings-icon__group settings-icon__group--2">
-                         <line class="settings-icon__line" x1="50" y1="15" x2="50" y2="85"/>
-                         <rect class="settings-icon__rect" x="42" y="60" width="15" height="15"/>
-                       </g>
-                       <g class="settings-icon__group settings-icon__group--3">
-                         <line class="settings-icon__line" x1="20" y1="15" x2="20" y2="85"/>
-                         <rect class="settings-icon__rect" x="13" y="35" width="15" height="15"/>
-                       </g>
-                      </svg>
-                     </a>
-                    
-                    <h1 class="welcome">Prijavljeni ste kot <?php  echo $this->session->userdata("ime")?>
-
-                    </h1>
-                    <?php echo "<a class=logout href=". site_url() . "/prijava/izpis" . ">Odjava</a>" ?>  
-                    
-                </nav>
-                <div id="mySidenav" class="sidenav">
-                    <br><br>
                     <?php $this->load->view("meniAdmin"); ?>
-                    <a href="javascript:void(0)" class="closebtn" aria-label="Close" onclick="closeNav()"><img src="/igniter/assets/img/x.svg"></a>
-                </div>
 
                 <div class="container-fluid">
+                    <br>
+                    <div class="container">
+                        <?php echo form_open("dejavnost/iskanjeDejavnosti");?>
+                            <div class="form-group">
+                                <label for="txt_iskalniNiz">Iščite dogodke:</label>
+                                <input type="text" class="form-control" id="txt_iskalniNiz" placeholder="Vnesite naziv, ime, priimek ali stanje(zavrnjeno, odobreno, prošnja, ustvarjeno)" name="txt_iskalniNiz">
+                                 <?php echo form_error("txt_iskalniNiz", "<div class='alert alert-danger error'>", "</div>"); ?>
+                            </div>
+                            <button type="submit" class="btn btn-dark">Išči</button>
+                        <?php echo form_close() ?>
+                    </div>
+                    <br>
                     <div class="row">
+                        
                         <?php
+                        
+                        $obvestila1 = array();
+                        foreach ($obvestila as $key => $row)
+                        {
+                            $obvestila1[$key] = $row['casVnosa'];
+                        }
+                        array_multisort($obvestila1, SORT_DESC, $obvestila);
+                        
                         if($obvestila == null){
                             echo "<h1>Ni dogodkov</h1>";
                         }
-                        else{                        
+                        else{
+                        /*    
+                        $odobrena = array();
+                        $zavrnjena = array();
+                        $poslana = array();
+                        $ustvarjena = array();    
+                            
                         foreach($obvestila as $obvestilo){
-                            echo "<div class='col-12 col-md-6 col-lg-4 vsebina'>";
+                                    if($obvestilo["odobreno"] == 1){
+                                        $odobrena[] = $obvestilo;
+                                    }
+                                    elseif($obvestilo["odobreno"] == 2){
+                                        $zavrnjena[] = $obvestilo;
+                                    }
+                                    elseif($obvestilo["odobreno"] == 0 and isset($obvestilo["odobreno"]) == true){
+                                        $poslana[] = $obvestilo;
+                                    }
+                                    else{
+                                        $ustvarjena[] = $obvestilo;
+                                  }
+                        }
+                        
+                        #print_r($odobrena);
+                        #echo "<br>";
+                        #print_r($zavrnjena);
+                        #echo "<br>";
+                        #print_r($poslana);
+                        #echo "<br>";
+                        #print_r($ustvarjena);
+                        #echo "<br>";
+                        */ 
+                    
+                            
+                        foreach($obvestila as $obvestilo){
+                            echo "<div class='col-12 col-md-6 col-lg-4 col-xl-3 vsebina'>";
                                     if($obvestilo["odobreno"] == 1){
                                         echo "<div class='prijavaOdobrena'>";
                                             echo "Prijava na dejavnost: " . $obvestilo["naziv"] . " - odobrena, " .  "<br>" . $obvestilo["casVnosa"] . "<br>" . 
