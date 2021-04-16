@@ -656,12 +656,14 @@ class Dejavnost extends CI_Controller{
     
                     if($this->session->userdata("vloga") == "admin"){
                         $this->session->set_flashdata("succes", "Dejavnost je bila uspešno spremenjena");
-                        $this->dejavnost_model->spreminjanjeUstvariPrisotnost($podatki["idDejavnost"]);                       
+                        $this->dejavnost_model->spreminjanjeUstvariPrisotnost($podatki["idDejavnost"]);
+                        $this->session->unset_userdata("spreminjanje");                       
                         redirect("dejavnost/vseDejavnosti");
                     }
                     else if($this->session->userdata("vloga") == "profesor"){
                         $this->session->set_flashdata("succes", "Dejavnost je bila uspešno spremenjena");
                         $this->dejavnost_model->spreminjanjeUstvariPrisotnost($podatki["idDejavnost"]);
+                        $this->session->unset_userdata("spreminjanje");
                         redirect("dejavnost/mojeDejavnosti");
                     }
                     
@@ -670,12 +672,12 @@ class Dejavnost extends CI_Controller{
                 else{
                     if($this->session->userdata("vloga") == "admin"){
                         $this->session->set_flashdata("error", "Dejavnosti ni bilo mogoče spremeniti");
-        
+                        $this->session->unset_userdata("spreminjanje");
                         redirect("dejavnost/vseDejavnosti");
                     }
                     else if($this->session->userdata("vloga") == "profesor"){
                         $this->session->set_flashdata("error", "Dejavnosti ni bilo mogoče spremeniti");
-        
+                        $this->session->unset_userdata("spreminjanje");
                         redirect("dejavnost/mojeDejavnosti");
                     }
                 }
@@ -953,19 +955,19 @@ class Dejavnost extends CI_Controller{
                     
                 }
             if($this->session->userdata("vloga") == "admin"){
-                $this->load->view("dejavnost/rocnaPrijavaAdmin", $rezultat);
+                $this->load->view("dejavnost/vseDejavnosti", $rezultat);
             }
             elseif($this->session->userdata("vloga") == "profesor"){
-                $this->load->view("dejavnost/rocnaPrijavaProfesor", $rezultat);
+                $this->load->view("dejavnost/moje", $rezultat);
             }
 
         }
         else{
             if($this->session->userdata("vloga") == "admin"){
-                $this->load->view("dejavnost/rocnaPrijavaAdmin", $rezultat);
+                $this->load->view("dejavnost/vseDejavnosti", $rezultat);
             }
             elseif($this->session->userdata("vloga") == "profesor"){
-                $this->load->view("dejavnost/rocnaPrijavaProfesor", $rezultat);
+                $this->load->view("dejavnost/moje", $rezultat);
             }
 
         }
@@ -986,10 +988,10 @@ class Dejavnost extends CI_Controller{
         }
         else{
             if($this->session->userdata("vloga") == "admin"){
-                $this->load->view("dejavnost/rocnaPrijavaAdmin", $rezultat);
+                $this->load->view("dejavnost/vseDejavnosti", $rezultat);
             }
             elseif($this->session->userdata("vloga") == "profesor"){
-                $this->load->view("dejavnost/rocnaPrijavaProfesor", $rezultat);
+                $this->load->view("dejavnost/moje", $rezultat);
             }
 
         }
@@ -1343,21 +1345,37 @@ class Dejavnost extends CI_Controller{
             redirect("");
         }
         else{
+            
             $date = new DateTime("now");
             $curr_date = $date->format('Y-m-d ');
     
-            $id = $this->input->post("gumb");
-            $id = explode(";", $id);
+            $idDijakov = $this->input->post("gumb");
+            $idDijakov = explode(";", $idDijakov);
+            print_r($idDijakov);
 
-            $bool = $this->input->post("txt_prisoten");
-    
-            $this->db->set("prisoten", $bool);
-            $this->db->where("idDejavnost", $id[0]);
-            $this->db->where("idOseba", $id[1]);
-            $this->db->where("datum", $curr_date);
-            $this->db->update("prisotnost");
-    
+            echo "<br><br>";
+
+            print_r($dijaki = $this->input->post());
+
+            echo $id[0] = $this->session->userdata("prisotnost");
+            $st=0;
+            foreach($dijaki as $dijak){
+                if($st<count($dijaki)-1){
+                    echo $dijak;
+                    echo $id[1] = $idDijakov[$st];
+                    $bool = $dijak;
+                        
+                    $this->db->set("prisoten", $bool);
+                    $this->db->where("idDejavnost", $id[0]);
+                    $this->db->where("idOseba", $id[1]);
+                    $this->db->where("datum", $curr_date);
+                    $this->db->update("prisotnost");
+                }
+                $st++;
+            }
+
             $this->session->set_flashdata("succes", "Prisotnost je bil shranjena");
+            $this->session->unset_userdata("prisotnost");
             
             redirect("dejavnost/beleziPrisotnost");
         }
@@ -1389,16 +1407,15 @@ class Dejavnost extends CI_Controller{
                 $dejavnosti["izbire"] = $this->dejavnost_model->isciDejavnostiProfesor($iskalniNiz, $this->session->userdata("idOseba"));
                 $this->load->view("dejavnost/moje", $dejavnosti); 
             }
-            $this->load->view("footer");
         }
     }
 
-    public function iskanjeRelacij(){
+    public function iskanjeDogodkov(){
         if($this->session->userdata("vloga") != "admin" and $this->session->userdata("vloga") != "profesor"){
             redirect("");
         }
         else{           
-            echo $iskalniNiz = $this->input->post("txt_iskalniNiz");
+            $iskalniNiz = $this->input->post("txt_iskalniNiz");
             if($iskalniNiz == "odobreno"){
                 $iskalniNiz = 1;
             }
@@ -1409,18 +1426,38 @@ class Dejavnost extends CI_Controller{
                 $iskalniNiz = null;
             }
             elseif($iskalniNiz == "prošnja"){
+                $stop = "prosnja";
                 $iskalniNiz = 0;
             }
-            echo $iskalniNiz;
             if($this->session->userdata("vloga") == "admin"){
                 $obvestila["obvestila"] = $this->dejavnost_model->isciRelacijeAdmin($iskalniNiz);
+                if(isset($iskalniNiz) and $iskalniNiz == 0 and !isset($stop)){
+                    for($x=min(array_keys($obvestila["obvestila"])); $x<max(array_keys($obvestila["obvestila"]))+1; $x++){
+                        if($obvestila["obvestila"][$x]["odobreno"] == 0){
+                            unset($obvestila["obvestila"][$x]);
+                            if(empty($obvestila["obvestila"])){
+                                break;
+                            }
+                        }
+                    }                    
+                }
+  
                 $this->load->view("vpis/admin/prijavljen", $obvestila);                
             }
             elseif($this->session->userdata("vloga") == "profesor"){
                 $obvestila["obvestila"] = $this->dejavnost_model->isciRelacijeProfesor($iskalniNiz, $this->session->userdata("idOseba"));
+                if(isset($iskalniNiz) and $iskalniNiz == 0 and !isset($stop)){
+                    for($x=min(array_keys($obvestila["obvestila"])); $x<max(array_keys($obvestila["obvestila"]))+1; $x++){
+                        if($obvestila["obvestila"][$x]["odobreno"] == 0){
+                            unset($obvestila["obvestila"][$x]);
+                            if(empty($obvestila["obvestila"])){
+                                break;
+                            }
+                        }
+                    }                    
+                }
                 $this->load->view("vpis/profesor/prijavljen", $obvestila); 
             }
-            $this->load->view("footer");
         }
     }
     

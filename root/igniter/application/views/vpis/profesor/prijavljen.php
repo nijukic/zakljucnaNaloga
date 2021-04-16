@@ -14,7 +14,7 @@
 
                     <div class="iskalnik">
                         <br>
-                        <?php echo form_open("dejavnost/iskanjeRelacij");?>
+                        <?php echo form_open("dejavnost/iskanjeDogodkov");?>
                             <div class="form-group">
                                 <label for="txt_iskalniNiz">Iščite dogodke:</label>
                                 <input type="text" class="form-control" id="txt_iskalniNiz" placeholder="Vnesite naziv, ime, priimek ali stanje(zavrnjeno, odobreno, prošnja, ustvarjeno)" name="txt_iskalniNiz">
@@ -35,25 +35,25 @@
                                 echo "<div class='col-12 col-md-6 col-lg-4 vsebina'>";
                                         if($obvestilo["odobreno"] == 1){
                                             echo "<div class='prijavaOdobrena'>";
-                                                echo "Prijava na dejavnost: " .  "<br>" . $obvestilo["naziv"] . " - odobrena, " .  "<br>" . $obvestilo["casVnosa"] . "<br>" . 
-                                                $obvestilo["ime"] . " " .  $obvestilo["priimek"];
+                                                echo "Prijava na dejavnost: " .  "<br>" . $obvestilo["naziv"] . " - odobrena, " .  "<br>" . "Čas dogodka: " . $obvestilo["casVnosa"] . "<br>" . 
+                                                "Ime in priimek dijaka: " . $obvestilo["ime"] . " " .  $obvestilo["priimek"];
                                             echo "</div>";
                                         }
                                         elseif($obvestilo["odobreno"] == 2){
                                             echo "<div class='prijavaZavrnjena'>";
-                                                echo "Prijava na dejavnost:  " .  "<br>" . $obvestilo["naziv"] . " - zavrnjena, " .  "<br>" . $obvestilo["casVnosa"] . "<br>" . 
-                                                $obvestilo["ime"] . " " .  $obvestilo["priimek"];
+                                            echo "Prijava na dejavnost: " .  "<br>" . $obvestilo["naziv"] . " - zavrnjena, " .  "<br>" . "Čas dogodka: " . $obvestilo["casVnosa"] . "<br>" . 
+                                            "Ime in priimek dijaka: " . $obvestilo["ime"] . " " .  $obvestilo["priimek"];
                                             echo "</div>";
                                         }
                                         elseif($obvestilo["odobreno"] == 0 and isset($obvestilo["odobreno"]) == true){
                                             echo "<div class='prijavaPoslana'>";
-                                                echo "Prijava na dejavnost:  " .  "<br>" . $obvestilo["naziv"] . " - čaka na odobritev, " .  "<br>" . $obvestilo["casVnosa"] . "<br>" . 
-                                                $obvestilo["ime"] . " " .  $obvestilo["priimek"];
+                                            echo "Prijava na dejavnost: " .  "<br>" . $obvestilo["naziv"] . " - čaka na odobritev, " .  "<br>" . "Čas dogodka: " . $obvestilo["casVnosa"] . "<br>" . 
+                                            "Ime in priimek dijaka: " . $obvestilo["ime"] . " " .  $obvestilo["priimek"];
                                             echo "</div>";
                                         }
                                         else{
                                           echo "<div class='dejavnostUstvarjena'>";
-                                              echo $obvestilo["naziv"] . " - dejavnost ustvarjena, " . "<br>" . $obvestilo["casVnosa"];
+                                              echo $obvestilo["naziv"] . " - dejavnost ustvarjena, " . "<br>" . "Čas dogodka: " . $obvestilo["casVnosa"];
                                           echo "</div>";
                                       }
                                 echo "</div>";

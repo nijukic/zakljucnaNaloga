@@ -50,6 +50,7 @@ public function mojeDejavnosti($idOseba){
     $this->db->join("oseba_has_dejavnost", "dejavnost.idDejavnost=oseba_has_dejavnost.Dejavnost_idDejavnost");
     $this->db->where("oseba_has_dejavnost.Oseba_idOseba", $idOseba);
     $this->db->where("avtor", 1);
+    $this->db->order_by('casVnosa', 'DESC');
     $query = $this->db->get();
     return $rezultat = $query->result_array();
     
@@ -62,6 +63,7 @@ public function mojeDejavnostiDijak($idOseba){
     $this->db->join("oseba", "oseba.idOseba=oseba_has_dejavnost.Oseba_idOseba");
     $this->db->where("oseba_has_dejavnost.Oseba_idOseba", $idOseba);
     $this->db->where("odobreno", 1);
+    $this->db->order_by('casVnosa', 'DESC');
     $query = $this->db->get();
     return $rezultat = $query->result_array();
 }
@@ -276,6 +278,7 @@ public function vseDejavnosti(){
     $this->db->join("oseba_has_dejavnost", "dejavnost.idDejavnost=oseba_has_dejavnost.Dejavnost_idDejavnost");
     $this->db->join("oseba", "oseba.idOseba=oseba_has_dejavnost.Oseba_idOseba");
     $this->db->where("avtor", 1);
+    $this->db->order_by('casVnosa', 'DESC');
     $query = $this->db->get();
     return $rezultat = $query->result_array(); 
 }
@@ -428,6 +431,7 @@ public function domovProfesor($idOseba){
     $this->db->from('oseba_has_dejavnost');
     $this->db->where("Oseba_idOseba", $idOseba);
     $this->db->where("avtor", 1);
+    $this->db->order_by('casVnosa', 'DESC');
     
     $where_clause = $this->db->get_compiled_select();
 
@@ -595,13 +599,18 @@ public function pridobiMentorja($idDejavnost){
 }
 
     public function isciDejavnostiAdmin($niz){
-        $this->db->select("dejavnost.*, ime, priimek");
-        $this->db->from("oseba");
-        $this->db->join("oseba_has_dejavnost", "idOseba=Oseba_idOseba");
-        $this->db->join("dejavnost", "Dejavnost_idDejavnost=idDejavnost");
+        $this->db->select("Oseba_idOseba, Dejavnost_idDejavnost, avtor, idDejavnost, moznaMesta, opis, malica, naziv, datumZacetek, datumKonec, mozneSole, mozniProgrami, mozniLetniki, mozniOddelki, ime, priimek");
+        $this->db->from("dejavnost");
+        $this->db->join("oseba_has_dejavnost", "dejavnost.idDejavnost=oseba_has_dejavnost.Dejavnost_idDejavnost");
+        $this->db->join("oseba", "oseba.idOseba=oseba_has_dejavnost.Oseba_idOseba");
+        $this->db->group_start();
+        $this->db->where("avtor", 1);
+        $this->db->group_start();
         $this->db->like("ime", $niz);
         $this->db->or_like("priimek", $niz);
         $this->db->or_like("naziv", $niz);
+        $this->db->group_end();
+        $this->db->group_end();
         $this->db->order_by('casVnosa', 'DESC');
         $query = $this->db->get();
         return $rezultat = $query->result_array(); 
@@ -626,43 +635,67 @@ public function pridobiMentorja($idDejavnost){
         $this->db->where("avtor", 1);
         
         $where_clause = $this->db->get_compiled_select();
-    
-    
+        
         $this->db->select("odobreno, naziv, casVnosa, ime, priimek");
         $this->db->from("oseba");
         $this->db->join("oseba_has_dejavnost", "idOseba=Oseba_idOseba");
         $this->db->join("dejavnost", "Dejavnost_idDejavnost=idDejavnost");
         $this->db->group_start();
-            $this->db->where("`Dejavnost_idDejavnost` IN ($where_clause)", NULL, FALSE);
+        $this->db->where("`Dejavnost_idDejavnost` IN ($where_clause)", NULL, FALSE);
+            if(is_null($niz)){
+                $this->db->where(array('odobreno' => NULL));                        
+            }
+            else{
             $this->db->group_start();
                 $this->db->like("ime", $niz);
                 $this->db->or_like("priimek", $niz);
                 $this->db->or_like("naziv", $niz);
-                $this->db->or_like("odobreno", $niz);
+                $this->db->or_group_start();
+                    if(is_null($niz) == false){
+                        $this->db->where("odobreno", $niz);
+                        $this->db->or_where("CONCAT(ime, ' ', priimek) LIKE '%".$niz."%'", NULL, FALSE);                        
+                    }
+                    else{
+                        $this->db->where("CONCAT(ime, ' ', priimek) LIKE '%".$niz."%'", NULL, FALSE);
+                    }
+                $this->db->group_end();
             $this->db->group_end();
+            }
         $this->db->group_end();
         $this->db->order_by('casVnosa', 'DESC');
         $query = $this->db->get();
         return $rezultat = $query->result_array();
-
-        $this->db->group_start();  //group start
-        $this->db->like('sender',$k);
-        $this->db->or_like('msg',$k); 
-        $this->db->group_end();  //group ed
     }
 
-    public function isciRelacijeAdmin($niz){
-        $this->db->select("odobreno, naziv, ime, priimek, vloga");
+    public function isciRelacijeAdmin($niz){  
+        $this->db->select("odobreno, naziv, casVnosa, ime, priimek");
         $this->db->from("oseba");
         $this->db->join("oseba_has_dejavnost", "idOseba=Oseba_idOseba");
         $this->db->join("dejavnost", "Dejavnost_idDejavnost=idDejavnost");
-        $this->db->like("ime", $niz);
-        $this->db->or_like("priimek", $niz);
-        $this->db->or_like("naziv", $niz);
+        $this->db->group_start();
+            if(is_null($niz)){
+                $this->db->where(array('odobreno' => NULL));                        
+            }
+            else{
+            $this->db->group_start();
+                $this->db->like("ime", $niz);
+                $this->db->or_like("priimek", $niz);
+                $this->db->or_like("naziv", $niz);
+                $this->db->or_group_start();
+                    if(is_null($niz) == false){
+                        $this->db->where("odobreno", $niz);
+                        $this->db->or_where("CONCAT(ime, ' ', priimek) LIKE '%".$niz."%'", NULL, FALSE);                        
+                    }
+                    else{
+                        $this->db->where("CONCAT(ime, ' ', priimek) LIKE '%".$niz."%'", NULL, FALSE);
+                    }
+                $this->db->group_end();
+            $this->db->group_end();
+            }
+        $this->db->group_end();
         $this->db->order_by('casVnosa', 'DESC');
-        $this->db->limit("50");
         $query = $this->db->get();
-        return $rezultat = $query->result_array(); 
+        return $rezultat = $query->result_array();
     }
 
 

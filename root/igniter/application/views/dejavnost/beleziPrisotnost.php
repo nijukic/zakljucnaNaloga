@@ -37,8 +37,8 @@
                     <div class="container-fluid">
                         <div class="row">
                             
-                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
-                              Launch demo modal
+                            <button type="button" class="btn btn-dark" data-toggle="modal" data-target="#exampleModalCenter">
+                              Beleži prisotnost
                             </button>
                             
                             <?php
@@ -61,7 +61,8 @@
                             
                             <?php        
                                     $this->session->set_userdata("prisotnost", $udelezenci[0]["idDejavnost"]);
-                                    $sez = array();      
+                                    $sez = array();
+                                    $seznam = "";     
                                     foreach($udelezenci as $udelezenec){
                                         if(in_array($udelezenec["idOseba"], $sez) == false){
                                             array_push($sez, $udelezenec["idOseba"]);
@@ -80,17 +81,15 @@
                                                                 <th scope="row"><?php echo $primerjavaID["naziv"]; ?></th>
                                                                 <td><?php echo "<br>"  . $udelezenec["ime"] . " " . $udelezenec["priimek"]; ?></td>
                                                                 <td><?php echo "<br>"  . $primerjavaID["datum"] .  "<br>"; ?></td>
-                                                                <td><input type="radio" class="form-check-input" id="txt_prisoten" name="txt_prisoten" value="1" <?php if($primerjavaID["prisoten"] == 1){
+                                                                <td><input type="radio" class="form-check-input" id="txt_prisoten<?php echo $udelezenec['idOseba']; ?>" name="txt_prisoten<?php echo $udelezenec['idOseba']; ?>" value="1" <?php if($primerjavaID["prisoten"] == 1){
                                                                     echo "checked='checked'";
                                                                 } ?>>
                                                                 <label for="Da">Da</label><br></td>
-                                                                <td><input type="radio" class="form-check-input" id="txt_prisoten" name="txt_prisoten" value="0" <?php if($primerjavaID["prisoten"] == 0){
+                                                                <td><input type="radio" class="form-check-input" id="txt_prisoten<?php echo $udelezenec['idOseba']; ?>" name="txt_prisoten<?php echo $udelezenec['idOseba']; ?>" value="0" <?php if($primerjavaID["prisoten"] == 0){
                                                                     echo "checked='checked'";
                                                                 } ?>>
                                                                 <label for="Ne">Ne</label><br></td>
-                                                                <td><?php $seznam = $udelezenec["idDejavnost"] . ";" . $udelezenec["idOseba"];
-                                                                    echo "<button type='submit'  name='gumb' id='gumb' class='btn btn-dark' value=" . $seznam  . ">" . "Shrani</button>";
-                                                                    echo form_close();
+                                                                <td><?php 
                                                                     echo "</div>"; ?></td>
                                                             </tr>
                                                         </tbody>
@@ -102,6 +101,7 @@
  
             
                                             }
+                                            $seznam .= $udelezenec["idOseba"] . ";";
                                 
                                     }
 
@@ -115,7 +115,10 @@
                                         </div>
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                            <button type="button" class="btn btn-primary">Save changes</button>
+                                            <?php
+                                            echo "<button type='submit'  name='gumb' id='gumb' class='btn btn-dark' value=" . $seznam  . ">" . "Shrani</button>";
+                                            echo form_close(); 
+                                            ?>
                                         </div>
                                     </div>
                                 </div>
